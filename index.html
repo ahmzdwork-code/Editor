@@ -1130,6 +1130,7 @@ Object.assign(AR, {
 Object.assign(AR, { "Removed {a} pauses, {b} filler sounds and {c} stumbles ({s}s shorter).": "أزلت {a} توقفات و{b} أصوات حشو و{c} تعثرات (أقصر بـ {s} ث)." });
 Object.assign(AR, { "Put the app on your home screen": "ضع التطبيق على الشاشة الرئيسية", "On iPhone, open the app’s website in Safari, tap Share, then Add to Home Screen. It then opens like any app, full screen, and works offline after the first use.": "على الآيفون، افتح موقع التطبيق في سفاري، واضغط مشاركة ثم «إضافة إلى الشاشة الرئيسية». سيفتح بعدها كأي تطبيق بملء الشاشة، ويعمل دون إنترنت بعد أول استخدام.",
   "5. Several clips": "5. عدة مقاطع", "Tap Clips to add more videos. They play one after another, and you can move or remove each one.": "اضغط «المقاطع» لإضافة فيديوهات أخرى. تُعرض واحدًا بعد الآخر، ويمكنك نقل أي منها أو إزالته.", "6. Do it yourself": "6. عدّل بنفسك", "7. Export": "7. صدّر" });
+Object.assign(AR, { "Listening to the video’s sound…": "أستمع إلى صوت الفيديو…", "Listening to the video’s sound… {n}%": "أستمع إلى صوت الفيديو… {n}%" });
 /* core: helpers, data model, storage, timeline maths, analysis of the sound and picture */
 
 /* ---------- helpers ---------- */
@@ -1514,6 +1515,20 @@ async function makeThumbs(p) {
     v.remove(); if (S.cur !== p) return;
   }
 }
+/* the sound level every 10 ms, from the decoded sound (used by pauses, captions and the editor) */
+async function setAudioBuffer(buf, big = false) {
+  S.audioBuf = buf;
+  const rate = 100, hop = Math.floor(buf.sampleRate / rate), n = Math.floor(buf.length / hop), env = new Float32Array(n);
+  const chs = []; for (let c = 0; c < Math.min(2, buf.numberOfChannels); c++) chs.push(buf.getChannelData(c));
+  for (let i = 0; i < n; i++) {
+    let sum = 0; const o = i * hop;
+    for (let k = 0; k < hop; k += 2) { let v = 0; for (const ch of chs) v += ch[o + k]; v /= chs.length; sum += v * v; }
+    env[i] = 10 * Math.log10(sum / (hop / 2) + 1e-10);
+    if (i % 20000 === 0) await sleep(0);
+  }
+  const sorted = Float32Array.from(env).sort();
+  S.audio = { env, rate, floor: sorted[Math.floor(n * 0.1)], loud: sorted[Math.floor(n * 0.95)], big };
+}
 async function analyseAudio() {
   const p = cur(); S.busy = t('Listening to the sound…'); renderBusy();
   let big = false;
@@ -1540,17 +1555,7 @@ async function analyseAudio() {
       const Ctx = window.OfflineAudioContext || window.webkitOfflineAudioContext, oc = new Ctx(chn, len, sr); buf = oc.createBuffer(chn, len, sr);
       for (const { c, buf: b } of parts) for (let ch = 0; ch < chn; ch++) { const src = b.getChannelData(Math.min(ch, b.numberOfChannels - 1)), dst = buf.getChannelData(ch), o = Math.round(c.off * sr); dst.set(src.subarray(0, Math.min(src.length, len - o, Math.round(c.dur * sr))), o); }
     }
-    S.audioBuf = buf;
-    const rate = 100, hop = Math.floor(buf.sampleRate / rate), n = Math.floor(buf.length / hop), env = new Float32Array(n);
-    const chs = []; for (let c = 0; c < Math.min(2, buf.numberOfChannels); c++) chs.push(buf.getChannelData(c));
-    for (let i = 0; i < n; i++) {
-      let sum = 0; const o = i * hop;
-      for (let k = 0; k < hop; k += 2) { let v = 0; for (const ch of chs) v += ch[o + k]; v /= chs.length; sum += v * v; }
-      env[i] = 10 * Math.log10(sum / (hop / 2) + 1e-10);
-      if (i % 20000 === 0) await sleep(0);
-    }
-    const sorted = Float32Array.from(env).sort();
-    S.audio = { env, rate, floor: sorted[Math.floor(n * 0.1)], loud: sorted[Math.floor(n * 0.95)], big };
+    await setAudioBuffer(buf, big);
   } catch (e) { S.audio = { none: true, big }; }
   if (S.cur === p) { S.busy = null; renderBusy(); refresh(); }
 }
@@ -1862,6 +1867,53 @@ async function aacFromVideo(file) {
   }
   return new Blob(parts, { type: 'audio/aac' });
 }
+/* Last way, works with any video the phone can play: the sound is played silently through the app's
+   sound system and recorded as it plays (as long as the video). It must start from a tap, so it is
+   started by the button that needs the sound (captions, auto-edit). */
+let liveCap = null;
+function startLiveCapture(onProgress) {
+  if (liveCap) return liveCap;
+  const p = cur(); if (!p) return null;
+  let ac; try { ac = S.ac || (S.ac = new (window.AudioContext || window.webkitAudioContext)()); ac.resume(); } catch (e) { return null; }
+  const v = document.createElement('video'); v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'auto';
+  v.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1'; document.body.appendChild(v);
+  const clips = [...p.clips], first = clips[0]; v.src = clipUrl(first);
+  // this play() happens inside the tap, which unlocks this player for the next clips too
+  const firstPlay = v.play(); firstPlay?.catch?.(() => { });
+  liveCap = (async () => {
+    const src = ac.createMediaElementSource(v), proc = ac.createScriptProcessor(4096, 2, 2), mute = ac.createGain(); mute.gain.value = 0;
+    src.connect(proc); proc.connect(mute); mute.connect(ac.destination);
+    const sr = ac.sampleRate, total = Math.ceil(p.dur * sr) + sr, L = new Float32Array(total), R = new Float32Array(total);
+    let clip = null, base = 0, written = 0;
+    proc.onaudioprocess = e => {
+      if (!clip || v.paused || v.seeking) return;
+      const a = e.inputBuffer.getChannelData(0), b = e.inputBuffer.numberOfChannels > 1 ? e.inputBuffer.getChannelData(1) : a;
+      // place each block where the player says it is, so the sound lines up with the video
+      const at = Math.max(written, Math.round((clip.off + Math.max(0, v.currentTime - a.length / sr)) * sr));
+      const n = Math.min(a.length, total - at); if (n <= 0) return;
+      L.set(a.subarray(0, n), at); R.set(b.subarray(0, n), at); written = at + n;
+    };
+    try {
+      for (let i = 0; i < clips.length; i++) {
+        clip = clips[i];
+        if (i > 0) { v.src = clipUrl(clip); await Promise.race([once(v, 'loadedmetadata'), sleep(8000)]); v.currentTime = 0; await v.play(); }
+        else { await (firstPlay || v.play()); }
+        await new Promise(res => { const tick = () => { onProgress?.(clamp((clip.off + v.currentTime) / p.dur, 0, 1)); if (v.ended || v.currentTime >= clip.dur - 0.05) return res(); setTimeout(tick, 250); }; v.addEventListener('ended', res, { once: true }); tick(); });
+        v.pause(); await sleep(150);
+      }
+    } finally { proc.disconnect(); src.disconnect(); v.remove(); }
+    const Ctx = window.OfflineAudioContext || window.webkitOfflineAudioContext, len = Math.max(written, 1);
+    const buf = new Ctx(2, len, sr).createBuffer(2, len, sr); buf.getChannelData(0).set(L.subarray(0, len)); buf.getChannelData(1).set(R.subarray(0, len));
+    // a recording with no sound at all means the phone couldn't play it either
+    let peak = 0; for (let i = 0; i < len; i += 64) peak = Math.max(peak, Math.abs(L[i]));
+    if (peak < 1e-4) throw new Error('silent');
+    await setAudioBuffer(buf, false);
+    return true;
+  })().catch(e => { console.warn('live sound capture failed', e); return false; }).finally(() => { liveCap = null; });
+  return liveCap;
+}
+/* used by the buttons: get the sound in whichever way works; true when it's ready */
+function needLiveSound() { return !S.audioBuf && S.audio && S.audio.none && !S.audio.big; }
 
 /* =====================================================================
    COLOUR ENGINE — Safari on iPhone can't apply filters to a canvas, so colour looks,
@@ -4367,6 +4419,12 @@ function wordsFromOutput(out, word, dur) {
 }
 async function makeCaptions(cfg) {
   const p = cur(); cfg = cfg || S.sheetData;
+  // the phone's sound reader couldn't read this video: record its sound while it plays (starts inside this tap)
+  if (needLiveSound()) {
+    const pr = startLiveCapture(f => { S.capJob = { state: 'run', text: t('Listening to the video’s sound… {n}%', { n: Math.round(f * 100) }), pct: f }; renderSheet(); });
+    S.capJob = { state: 'run', text: t('Listening to the video’s sound…'), pct: 0 }; renderSheet();
+    if (pr) await pr;
+  }
   if (!S.audioBuf) { S.capJob = { state: 'error', text: S.audio?.none ? t('This video’s sound couldn’t be read, so captions can’t be written automatically.') : t('Still listening to the sound. Try again in a moment.') }; renderSheet(); return false; }
   S.capJob = { state: 'run', text: t('Preparing the sound…'), pct: null }; renderSheet();
   let audio; try { audio = await resample16k(S.audioBuf); } catch (e) { S.capJob = { state: 'error', text: t('The sound couldn’t be prepared.'), detail: String(e.message || e) }; renderSheet(); return false; }
@@ -5098,9 +5156,15 @@ const ACT = {
   makeplan: async () => {
     const d = S.sheetData; if (!d.goal) return;
     if (!S.audio) { toast(t('Still listening to the sound. One moment.')); return; }
+    // the phone's sound reader couldn't read this video: record its sound while it plays (starts inside this tap)
+    if (needLiveSound()) {
+      const pr = startLiveCapture(f => { d.busy = t('Listening to the video’s sound… {n}%', { n: Math.round(f * 100) }); renderSheet(); });
+      d.busy = t('Listening to the video’s sound…'); renderSheet();
+      if (pr) await pr; d.busy = null;
+    }
     // for cuts by words, the app first listens to every word (once; it also gives you captions later)
     const p = cur();
-    if (!p.captions.length && !inClaude() && S.audioBuf && GOALS[d.goal].pauses) {
+    if (!p.captions.length && !inClaude() && (S.audioBuf || needLiveSound()) && GOALS[d.goal].pauses) {
       d.busy = t('Listening to every word, to cut by words…'); renderSheet();
       const ok = await makeCaptions({ lang: p.capLang || 'auto', out: 'same', hidden: true });
       if (ok) p.capAuto = true;
