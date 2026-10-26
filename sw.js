@@ -1,6 +1,6 @@
 /* Offline support: the app itself and the on-phone helpers (face and people finders, speech program)
    are kept on the phone after the first use. Videos are never sent anywhere; this only stores the app. */
-const VERSION = 'v1-1793007775';
+const VERSION = 'v1-1793007815';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open('shell-' + VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -13,7 +13,7 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET' || url.protocol.startsWith('blob') || url.protocol === 'data:') return;
   // the page: newest copy when online, the stored one when offline
   if (req.mode === 'navigate') {
-    e.respondWith(fetch(req).then(r => { const copy = r.clone(); caches.open('shell-' + VERSION).then(c => c.put('./index.html', copy)); return r; }).catch(() => caches.match('./index.html')));
+    e.respondWith(fetch(req, { cache: 'no-cache' }).then(r => { const copy = r.clone(); caches.open('shell-' + VERSION).then(c => c.put('./index.html', copy)); return r; }).catch(() => caches.match('./index.html')));
     return;
   }
   // model files and libraries: stored after the first download (they never change for a given version)
