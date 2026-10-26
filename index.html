@@ -1522,7 +1522,12 @@ async function analyseAudio() {
     for (const c of p.clips) {
       const file = S.files[c.id]; if (!file) continue;
       if (file.size > 600 * 1048576) { big = true; continue; }
-      try { const buf = await new Promise((res, rej) => { file.arrayBuffer().then(ab => { const pr = ac.decodeAudioData(ab, res, rej); if (pr && pr.then) pr.then(res, rej); }, rej); }); parts.push({ c, buf }); } catch (e) { }
+      const dec = blob => new Promise((res, rej) => { blob.arrayBuffer().then(ab => { const pr = ac.decodeAudioData(ab, res, rej); if (pr && pr.then) pr.then(res, rej); }, rej); });
+      let buf = null;
+      try { buf = await dec(file); } catch (e) { console.warn('sound: browser reader failed', e); }
+      // some phone videos (spatial audio, .mov) need their sound track copied out first
+      if (!buf) { try { const aac = await aacFromVideo(file); if (aac) buf = await dec(aac); } catch (e) { console.warn('sound: track copy failed', e); } }
+      if (buf) parts.push({ c, buf });
       if (S.cur !== p) { ac.close && ac.close(); return; }
     }
     ac.close && ac.close();
@@ -1770,6 +1775,93 @@ function removeClip(clipId) {
 }
 /* the clips in the order they appear in the edit (a clip used twice shows once) */
 function clipsInOrder(p) { const seen = new Set(), out = []; for (const g of p.segs) { const c = segClip(p, g); if (!seen.has(c.id)) { seen.add(c.id); out.push(c); } } return out; }
+
+/* =====================================================================
+   SOUND FROM ANY PHONE VIDEO
+   Some phone videos (iPhone 16 with spatial audio, some .mov files) can't be read by the browser's own
+   sound reader. Then the app opens the video file itself, finds the normal (AAC) sound track, copies its
+   sound frames out in a form every browser reads, and decodes that. Only the sound is read, piece by piece,
+   so even long videos don't need to be loaded into memory whole.
+   ===================================================================== */
+async function readBytes(file, pos, len) { return new Uint8Array(await file.slice(pos, pos + len).arrayBuffer()); }
+const u32 = (b, o) => ((b[o] << 24) | (b[o + 1] << 16) | (b[o + 2] << 8) | b[o + 3]) >>> 0;
+const fourcc = (b, o) => String.fromCharCode(b[o], b[o + 1], b[o + 2], b[o + 3]);
+/* walks the boxes of an MP4/MOV file; only box headers are read from the file, except inside "moov" */
+async function findMoov(file) {
+  let pos = 0;
+  while (pos + 8 <= file.size) {
+    const h = await readBytes(file, pos, 16); let size = u32(h, 0); const type = fourcc(h, 4); let hdr = 8;
+    if (size === 1) { size = Number((BigInt(u32(h, 8)) << 32n) | BigInt(u32(h, 12))); hdr = 16; } else if (size === 0) size = file.size - pos;
+    if (type === 'moov') return await readBytes(file, pos, size);
+    if (size < 8) return null; pos += size;
+  }
+  return null;
+}
+function boxes(b, start, end) {
+  const out = []; let p = start;
+  while (p + 8 <= end) { let size = u32(b, p); const type = fourcc(b, p + 4); let hdr = 8; if (size === 1) { size = u32(b, p + 12); hdr = 16; } if (size < 8 || p + size > end) break; out.push({ type, start: p, hdr, end: p + size }); p += size; }
+  return out;
+}
+const child = (b, box, type) => boxes(b, box.start + box.hdr, box.end).find(x => x.type === type);
+/* the AAC sound track: its codec settings and where each sound frame sits in the file */
+function aacTrack(moov) {
+  for (const trak of boxes(moov, 8, moov.length).filter(x => x.type === 'trak')) {
+    const mdia = child(moov, trak, 'mdia'); if (!mdia) continue;
+    const hdlr = child(moov, mdia, 'hdlr'); if (!hdlr || fourcc(moov, hdlr.start + hdlr.hdr + 8) !== 'soun') continue;
+    const stbl = (() => { const minf = child(moov, mdia, 'minf'); return minf && child(moov, minf, 'stbl'); })(); if (!stbl) continue;
+    const stsd = child(moov, stbl, 'stsd'); if (!stsd) continue;
+    const entry = stsd.start + stsd.hdr + 8; if (fourcc(moov, entry + 4) !== 'mp4a') continue;
+    // find the esds inside the mp4a entry (its position depends on the sound description version)
+    let asc = null; const eEnd = entry + u32(moov, entry);
+    for (let p = entry + 28; p + 8 < eEnd; p++) if (fourcc(moov, p + 4) === 'esds') {
+      // walk the descriptors to the decoder-specific info (tag 5)
+      let q = p + 12; const qEnd = p + u32(moov, p);
+      const len = () => { let n = 0; for (let k = 0; k < 4; k++) { const c = moov[q++]; n = (n << 7) | (c & 0x7f); if (!(c & 0x80)) break; } return n; };
+      while (q < qEnd) { const tag = moov[q++], l = len(); if (tag === 3) q += 3; else if (tag === 4) q += 13; else if (tag === 5) { asc = moov.slice(q, q + l); break; } else q += l; }
+      break;
+    }
+    if (!asc || asc.length < 2) continue;
+    const obj = asc[0] >> 3, srIdx = ((asc[0] & 7) << 1) | (asc[1] >> 7), ch = (asc[1] >> 3) & 15;
+    if (obj > 4) continue;   // only plain AAC (LC and its relatives) can be copied out this way
+    const tab = n => child(moov, stbl, n);
+    const stsz = tab('stsz'), stsc = tab('stsc'), stco = tab('stco') || tab('co64'); if (!stsz || !stsc || !stco) continue;
+    const zs = stsz.start + stsz.hdr, fixed = u32(moov, zs + 4), count = u32(moov, zs + 8), sizes = [];
+    for (let i = 0; i < count; i++) sizes.push(fixed || u32(moov, zs + 12 + i * 4));
+    const cs = stco.start + stco.hdr, nCh = u32(moov, cs + 4), big = stco.type === 'co64', chunks = [];
+    for (let i = 0; i < nCh; i++) chunks.push(big ? u32(moov, cs + 8 + i * 8) * 4294967296 + u32(moov, cs + 12 + i * 8) : u32(moov, cs + 8 + i * 4));
+    const ss = stsc.start + stsc.hdr, nE = u32(moov, ss + 4), runs = [];
+    for (let i = 0; i < nE; i++) runs.push([u32(moov, ss + 8 + i * 12), u32(moov, ss + 12 + i * 12)]);
+    // where every frame starts in the file
+    const pos = []; let si = 0;
+    for (let c = 0; c < nCh && si < count; c++) {
+      let per = 0; for (const [first, n] of runs) if (c + 1 >= first) per = n;
+      let off = chunks[c]; for (let k = 0; k < per && si < count; k++) { pos.push([off, sizes[si]]); off += sizes[si]; si++; }
+    }
+    return { obj: Math.max(1, obj), srIdx, ch: ch || 2, frames: pos };
+  }
+  return null;
+}
+/* the sound track as an AAC stream with a small header on every frame (ADTS), which browsers read everywhere */
+async function aacFromVideo(file) {
+  const moov = await findMoov(file); if (!moov) return null;
+  const tr = aacTrack(moov); if (!tr || !tr.frames.length) return null;
+  const parts = []; let i = 0;
+  while (i < tr.frames.length) {
+    // read frames in batches of nearby bytes, so the file is read in few large pieces
+    const from = tr.frames[i][0]; let j = i, to = from;
+    while (j < tr.frames.length && tr.frames[j][0] >= from && tr.frames[j][0] + tr.frames[j][1] - from < 4 << 20) { to = Math.max(to, tr.frames[j][0] + tr.frames[j][1]); j++; }
+    if (j === i) j = i + 1, to = from + tr.frames[i][1];
+    const buf = await readBytes(file, from, to - from);
+    for (let k = i; k < j; k++) {
+      const [off, len] = tr.frames[k], n = len + 7, h = new Uint8Array(n);
+      h[0] = 0xff; h[1] = 0xf1; h[2] = ((tr.obj - 1) << 6) | (tr.srIdx << 2) | (tr.ch >> 2); h[3] = ((tr.ch & 3) << 6) | (n >> 11);
+      h[4] = (n >> 3) & 0xff; h[5] = ((n & 7) << 5) | 0x1f; h[6] = 0xfc;
+      h.set(buf.subarray(off - from, off - from + len), 7); parts.push(h);
+    }
+    i = j;
+  }
+  return new Blob(parts, { type: 'audio/aac' });
+}
 
 /* =====================================================================
    COLOUR ENGINE — Safari on iPhone can't apply filters to a canvas, so colour looks,
