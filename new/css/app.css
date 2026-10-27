@@ -143,8 +143,8 @@ input, select, textarea { font: inherit; color: inherit; }
 .tool.danger .ic, .tool.danger { color: var(--danger); }
 
 /* ---------- sheet ---------- */
-.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 60; background: var(--bg2); border-top: 1px solid var(--line2); border-radius: 16px 16px 0 0; display: flex; flex-direction: column; max-height: 62vh; box-shadow: 0 -10px 30px rgba(0,0,0,.45); transform: translateY(0); transition: transform .2s ease; padding-bottom: var(--safe-b); }
-.sheet.tall { max-height: 84vh; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 60; background: var(--bg2); border-top: 1px solid var(--line2); border-radius: 16px 16px 0 0; display: flex; flex-direction: column; max-height: 50vh; box-shadow: 0 -10px 30px rgba(0,0,0,.45); transform: translateY(0); transition: transform .2s ease; padding-bottom: var(--safe-b); }
+.sheet.tall { max-height: 62vh; }
 .sheet.closing { transform: translateY(105%); }
 .sh-head { display: flex; align-items: center; gap: 6px; padding: 8px 8px 6px 16px; flex: none; }
 .sh-head h2 { margin: 0; font-size: 15px; font-weight: 650; flex: 1; }
