@@ -171,7 +171,21 @@ svg.i.xs{width:13px;height:13px;stroke-width:2}
 .reo span.on{box-shadow:0 0 0 2px #fff;z-index:2;transition:none}
 .kfb.on{color:var(--accent-text)}
 .kfb:disabled{opacity:.3}
-.app.full .tlwrap,.app.full .tools,.app.full .top,.app.full #tip{display:none}
+.app.full .tlwrap,.app.full .tools,.app.full .top,.app.full #tip,.app.full .transport{display:none}
+.fullbar{display:none}
+.app.full .fullbar{display:flex;align-items:center;gap:8px;flex:none;padding:6px max(10px,var(--sar)) calc(10px + var(--sab)) max(6px,var(--sal));background:#000}
+.app.full .fullbar .tc{font-size:12px;color:var(--muted);white-space:nowrap;direction:ltr}
+.app.full .fullbar .fseek{flex:1;min-width:0}
+.app.full .stage{padding:calc(6px + var(--sat)) 0 0}
+.app.full .tapplay{display:grid}
+.tlooks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.tlook{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px;border-radius:10px;background:var(--raised);font-size:11px;color:var(--muted)}
+.tlook span{font:800 20px/1.2 "Montserrat",var(--ui);padding:1px 7px;border-radius:6px}
+.tlook i{font-style:normal}
+.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.fopt{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 7px;border-radius:10px;background:var(--raised);font-size:18px;line-height:1.2;box-shadow:inset 0 0 0 2px transparent}
+.fopt.on{box-shadow:inset 0 0 0 2px var(--accent-text)}
+.fopt i{font:500 10px var(--ui);color:var(--muted);font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .tip{flex:none;margin:8px max(12px,var(--sar)) 0 max(12px,var(--sal));display:flex;gap:10px;align-items:center;padding:8px 6px 8px 12px;border-radius:12px;background:var(--panel);font-size:14px;color:var(--text)}
 [dir=rtl] .tip{padding:8px 12px 8px 6px}
 .tip svg{color:var(--muted)}
@@ -353,13 +367,40 @@ summary{cursor:pointer;color:var(--accent-text);font-size:14px;font-weight:500;p
 .toast button{color:var(--accent-text);font-weight:600}
 .acards.out .aprev i{animation-direction:reverse}
 [hidden]{display:none!important}
+.k-text.gfx{background:#2f6f8f}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 12px;border-radius:12px;background:var(--raised);font-size:14px;font-weight:600;text-align:start;box-shadow:inset 0 0 0 2px transparent;line-height:1.25}
+.chip small{font-size:11.5px;font-weight:400;color:var(--muted)}
+.chip.on{box-shadow:inset 0 0 0 2px var(--accent-text);background:var(--accent-soft)}
+.studio-say{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:14px;background:var(--raised);font-size:15px;line-height:1.4}
+.studio-say svg{color:var(--accent-text);margin-top:2px}
+.ideas{display:flex;flex-direction:column;gap:10px}
+.idea{border-radius:14px;background:var(--raised);padding:12px;display:flex;flex-direction:column;gap:10px;opacity:.7;box-shadow:inset 0 0 0 1.5px transparent}
+.idea.on{opacity:1;box-shadow:inset 0 0 0 1.5px var(--accent-line)}
+.idea.na{opacity:.45}
+.idea .ih{display:flex;gap:10px;align-items:flex-start}
+.idea .ih input{margin-top:3px;width:20px;height:20px;accent-color:var(--accent)}
+.idea .ic{width:30px;height:30px;border-radius:9px;background:var(--raised-2);display:grid;place-items:center;color:var(--accent-text);flex:none}
+.idea b{display:block;font-size:15px;font-weight:600}
+.idea .why{display:block;font-size:13px;color:var(--muted);margin-top:2px;line-height:1.4}
+.idea details{font-size:13px}.idea summary{color:var(--accent-text);cursor:pointer}
+.idea .sub{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
+.idea .btn.sm{align-self:flex-start}
+.clipc .t{font-weight:600}
+.gcard{min-height:0}
+.gprev{height:38px;border-radius:8px;background:#0e0e10;display:flex;align-items:flex-end;justify-content:center;gap:5px;padding:6px;margin-bottom:4px}
+.gprev i{width:10px;border-radius:3px;background:var(--accent-text);animation:gbar 1.6s ease-out infinite}
+.gprev i:nth-child(1){height:40%;opacity:.5}.gprev i:nth-child(2){height:70%;opacity:.7;animation-delay:.15s}.gprev i:nth-child(3){height:100%;animation-delay:.3s}
+.g-stat i,.g-step i,.g-quote i,.g-lower i,.g-cta i,.g-checklist i{width:auto;flex:1;height:8px!important;align-self:center}
+@keyframes gbar{0%{transform:scaleY(.1);transform-origin:bottom}60%,100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.gprev i{animation:none}}
 </style>
 
 <div class="app" id="app"></div>
 <div id="toast"></div>
 <input type="file" id="musicpicker" accept="audio/*,.mp3,.m4a,.wav,.aac,.ogg" hidden>
-<input type="file" id="picker" accept="video/*,.mp4,.mov,.m4v,.webm,.mkv,.3gp" multiple hidden>
-<input type="file" id="clippicker" accept="video/*,.mp4,.mov,.m4v,.webm,.mkv,.3gp" multiple hidden>
+<input type="file" id="picker" accept="video/*,image/*,.mp4,.mov,.m4v,.webm,.mkv,.3gp" multiple hidden>
+<input type="file" id="clippicker" accept="video/*,image/*,.mp4,.mov,.m4v,.webm,.mkv,.3gp" multiple hidden>
 <input type="file" id="ovpicker" accept="image/*,video/*,.mp4,.mov,.m4v,.webm" hidden>
 <input type="file" id="sndpicker" accept="audio/*,.mp3,.m4a,.wav,.aac,.ogg" hidden>
 <input type="file" id="replacepicker" accept="video/*,.mp4,.mov,.m4v,.webm" hidden>
@@ -1395,6 +1436,184 @@ Object.assign(AR, {
 "Overlays: {n}": "طبقات: {n}",
 "Sounds: {n}": "أصوات: {n}",
 "The phone ran out of memory while writing captions, so the page restarted. Your project is back. Try again: captions now use the lighter speech program.": "نفدت ذاكرة الهاتف أثناء كتابة الترجمة فأُعيد تشغيل الصفحة. مشروعك عاد كما هو. حاول مرة أخرى: الترجمة الآن تستخدم برنامج الكلام الأخف.",
+"Exit full screen": "الخروج من ملء الشاشة",
+"Layout": "التخطيط",
+"Outline width": "سُمك الحدّ",
+"Background": "الخلفية",
+"Background opacity": "شفافية الخلفية",
+"Italic": "مائل",
+"Alignment": "المحاذاة",
+"Left": "يسار",
+"Centre": "وسط",
+"Right": "يمين",
+"Letter spacing": "تباعد الأحرف",
+"Line spacing": "تباعد الأسطر",
+"Graphics": "رسومات",
+"Animated cards for numbers, points and endings. Tap one to add it at {t}.": "بطاقات متحركة للأرقام والنقاط والخاتمة. اضغط على واحدة لإضافتها عند {t}.",
+"Graphic": "رسم",
+"Number": "رقم",
+"After the number": "بعد الرقم",
+"Nothing": "لا شيء",
+"Before the number (e.g. $ or €)": "قبل الرقم (مثل $ أو €)",
+"Label": "الوصف",
+"Title (optional)": "العنوان (اختياري)",
+"Bars": "الأعمدة",
+"Points": "النقاط",
+"Value": "القيمة",
+"After each number": "بعد كل رقم",
+"Sentence": "الجملة",
+"Who said it (optional)": "القائل (اختياري)",
+"Name": "الاسم",
+"Role or detail": "الصفة أو التفصيل",
+"6 sec": "6 ثوانٍ",
+"New": "جديد",
+"New point": "نقطة جديدة",
+"Tighten the speech": "شدّ الكلام",
+"{a} pauses{b}. {s}s shorter, and every sentence stays whole.": "{a} توقفات{b}. أقصر بـ{s} ث، وكل جملة تبقى كاملة.",
+"{n} filler sounds and stumbles": "{n} أصوات تردد وتلعثم",
+"Drop repeated takes: {n}": "حذف اللقطات المكررة: {n}",
+"You said some lines twice. I keep the later, cleaner take.": "قلت بعض الجمل مرتين. أُبقي اللقطة الأخيرة الأنظف.",
+"Shorten to about {n} seconds": "اختصار إلى نحو {n} ثانية",
+"I keep your strongest {k} of {n} sentences, in their order, and leave out the rest. Check what goes.": "أُبقي أقوى {k} من {n} جملة بترتيبها وأحذف الباقي. راجع ما سيُحذف.",
+"Open with your strongest line": "ابدأ بأقوى جملة لديك",
+"“{x}” (at {t}). Viewers decide in the first two seconds; this plays first as a teaser, then the video starts.": "«{x}» (عند {t}). المشاهد يقرر في أول ثانيتين؛ تُعرض هذه الجملة أولًا كتشويق ثم يبدأ الفيديو.",
+"The words couldn’t be written, so captions and word-based ideas are off.": "تعذّرت كتابة الكلام، لذا الترجمة والأفكار المعتمدة على الكلمات غير متاحة.",
+"Captions: {x}": "الترجمة: {x}",
+"Word-by-word highlights keep eyes on the screen, even with the sound off.": "تمييز الكلمات واحدة واحدة يُبقي العين على الشاشة حتى دون صوت.",
+"Clear captions: most people watch without sound.": "ترجمة واضحة: أغلب الناس يشاهدون دون صوت.",
+"Animated numbers: {n}": "أرقام متحركة: {n}",
+"at {t}": "عند {t}",
+"A number that counts up on screen sticks in the memory.": "الرقم الذي يعدّ على الشاشة يبقى في الذاكرة.",
+"Numbered titles for your {n} points": "عناوين مرقّمة لنقاطك الـ{n}",
+"You go through points (“{x}”…). A numbered title appears as each one starts.": "تتحدث عن نقاط («{x}»…). يظهر عنوان مرقّم مع بداية كل نقطة.",
+"A checklist of the points at the end": "قائمة بالنقاط في النهاية",
+"Sums up what was said, so it’s easy to remember and share.": "تلخّص ما قيل ليسهل تذكّره ومشاركته.",
+"Punch-in zooms on emphasis: {n}": "تكبير عند مواضع التأكيد: {n}",
+"Smooth zoom-ins where your voice rises, so the important lines land.": "تكبير ناعم حين يرتفع صوتك لتصل الجمل المهمة.",
+"Hide the jump cuts": "إخفاء القطعات",
+"Each cut changes the framing slightly, the way editors hide cuts in talking videos.": "كل قطع يغيّر الإطار قليلًا، كما يفعل المحررون لإخفاء القطعات.",
+"Smooth section changes: {n}": "انتقالات ناعمة بين الأقسام: {n}",
+"A quick zoom transition and a soft whoosh (no music) mark each new part.": "انتقال تكبير سريع وصوت اندفاع خفيف (بلا موسيقى) عند كل قسم جديد.",
+"A gentle transition marks each new part.": "انتقال هادئ عند كل قسم جديد.",
+"An opening title": "عنوان افتتاحي",
+"Tells viewers straight away what this is about. Edit the words below.": "يخبر المشاهد فورًا عن موضوع الفيديو. عدّل الكلمات أدناه.",
+"Format: {x}": "المقاس: {x}",
+"Made for {x}.": "مناسب لـ{x}.",
+"A light colour correction: clearer skin tones and contrast, nothing heavy.": "تصحيح ألوان خفيف: ألوان أوضح وتباين أفضل دون مبالغة.",
+"Evens out the voice and cuts low hum, like a better microphone.": "يوازن الصوت ويزيل الطنين كأنه ميكروفون أفضل.",
+"A thin bar shows how much is left, which keeps people watching to the end.": "شريط رفيع يوضح ما تبقى، فيكمل الناس المشاهدة.",
+"A soft start and a soft ending.": "بداية ونهاية ناعمتان.",
+"Follow for more": "تابعنا للمزيد",
+"An ending card": "بطاقة ختام",
+"A clear last line tells people what to do next. Edit the words below.": "جملة أخيرة واضحة تخبر الناس بما يفعلونه بعد ذلك. عدّل الكلمات أدناه.",
+"Check for faces to blur": "البحث عن وجوه لتمويهها",
+"Opens Face blur after the edit, to hide anyone who shouldn’t be shown.": "يفتح تمويه الوجه بعد التعديل لإخفاء من لا ينبغي ظهوره.",
+"Check for people to cover (Modesty)": "البحث عن أشخاص لتغطيتهم (الستر)",
+"Opens Modesty after the edit, to cover anyone not dressed modestly.": "يفتح أداة الستر بعد التعديل لتغطية من لا يرتدي لباسًا محتشمًا.",
+"I watched your {d} video": "شاهدتُ الفيديو ومدته {d}",
+"{n} sentences": "{n} جمل",
+"{n} points": "{n} نقاط",
+"{n} numbers": "{n} أرقام",
+"{n} questions": "{n} أسئلة",
+"Here is what I suggest. Keep what you like.": "هذه اقتراحاتي، احتفظ بما يعجبك.",
+"Tightened: {s}s shorter": "تم الشدّ: أقصر بـ{s} ث",
+"Numbered titles: {n}": "عناوين مرقّمة: {n}",
+"A checklist at the end": "قائمة في النهاية",
+"Punch-in zooms: {n}": "تكبيرات: {n}",
+"Ending card": "بطاقة الختام",
+"Teaser: your strongest line opens the video": "تشويق: أقوى جملة تفتتح الفيديو",
+"Worth a look": "يستحق النظر",
+"Clip made as its own project. Your original is unchanged.": "أُنشئ المقطع كمشروع مستقل. الأصل لم يتغير.",
+"Watching your video…": "أشاهد الفيديو…",
+"Keep the app open. The first time, the speech program downloads.": "أبقِ التطبيق مفتوحًا. في المرة الأولى يتم تنزيل برنامج الكلام.",
+"Your edit is ready": "تعديلك جاهز",
+"Done. Press play to watch it. Everything is still editable on the timeline.": "تم. اضغط تشغيل لمشاهدته. كل شيء ما زال قابلًا للتعديل في الخط الزمني.",
+"Next": "التالي",
+"Change the ideas": "تغيير الأفكار",
+"The best clips": "أفضل المقاطع",
+"I found {n} moments that work on their own. Preview them, then make the ones you like.": "وجدتُ {n} لحظات تصلح وحدها. شاهدها ثم أنشئ ما يعجبك.",
+"I couldn’t find clear moments that work on their own. Try a longer target length.": "لم أجد لحظات واضحة تصلح وحدها. جرّب مدة أطول.",
+"from {t}": "من {t}",
+"Make clip": "إنشاء مقطع",
+"My ideas for your video": "أفكاري لفيديوك",
+"Hear it": "استمع",
+"Edit my video ({n} ideas)": "عدّل الفيديو ({n} أفكار)",
+"Change the brief": "تغيير الوصف",
+"This is your new clip. How should I finish it?": "هذا مقطعك الجديد. كيف أُكمل تحريره؟",
+"I’m your editor. Tell me a little about this video, and I’ll watch it and suggest a plan. Nothing changes until you approve.": "أنا محرّرك. أخبرني قليلًا عن هذا الفيديو وسأشاهده وأقترح خطة. لن يتغير شيء حتى توافق.",
+"What is it?": "ما نوع الفيديو؟",
+"Where will it go?": "أين سيُنشر؟",
+"How long should each clip be?": "كم مدة كل مقطع؟",
+"How long should it be?": "كم مدته؟",
+"What feel?": "أي طابع؟",
+"Anything else I should know? (optional)": "هل هناك شيء آخر يجب أن أعرفه؟ (اختياري)",
+"e.g. it’s for my brother, keep it respectful": "مثلًا: لأخي، اجعله محترمًا",
+"Find the best clips": "ابحث عن أفضل المقاطع",
+"Watch my video and suggest ideas": "شاهد الفيديو واقترح أفكارًا",
+"Still listening to the sound… one moment.": "ما زلت أستمع إلى الصوت… لحظة.",
+"Listening to every word…": "أستمع إلى كل كلمة…",
+"Bold yellow": "أصفر عريض",
+"Dark box": "صندوق داكن",
+"Light box": "صندوق فاتح",
+"Jade": "أخضر",
+"Alert": "تنبيه",
+"Blue glow": "توهج أزرق",
+"Cream": "كريمي",
+"Bar chart": "رسم بياني",
+"Step title": "عنوان خطوة",
+"Quote card": "بطاقة اقتباس",
+"Lower third": "شريط سفلي",
+"Follow card": "بطاقة متابعة",
+"Checklist": "قائمة تحقق",
+"Reminder or lecture": "تذكير أو محاضرة",
+"Short reel": "ريل قصير",
+"Tutorial or how-to": "شرح أو تعليم",
+"Vlog or story": "فلوق أو قصة",
+"Counts up, with a ring for percentages": "يعدّ تصاعديًا مع دائرة للنسب",
+"Up to 5 bars that grow in": "حتى 5 أعمدة تنمو",
+"A numbered point, like “1. Intention”": "نقطة مرقّمة مثل «1. النية»",
+"A sentence on a calm card": "جملة على بطاقة هادئة",
+"Name and role at the bottom": "الاسم والصفة في الأسفل",
+"A clear ending: follow, share, visit": "خاتمة واضحة: تابع، شارك، زر",
+"Points that tick one by one": "نقاط تُعلَّم واحدة تلو الأخرى",
+"Calm, clear, every sentence whole": "هادئ وواضح، كل جملة كاملة",
+"Hook, captions, fast pace": "تشويق وترجمة وإيقاع سريع",
+"Landscape, clean and steady": "عرضي ونظيف وثابت",
+"Conversation, big captions": "حوار وترجمة كبيرة",
+"Steps and points made clear": "خطوات ونقاط واضحة",
+"Punchy, numbers stand out": "قوي، والأرقام بارزة",
+"Natural, smooth, personal": "طبيعي وناعم وشخصي",
+"Short clips from a long video": "مقاطع قصيرة من فيديو طويل",
+"Keep it all": "إبقاء الكل",
+"About 90 sec": "نحو 90 ثانية",
+"About 60 sec": "نحو 60 ثانية",
+"About 30 sec": "نحو 30 ثانية",
+"About 15 sec": "نحو 15 ثانية",
+"Calm": "هادئ",
+"Balanced": "متوازن",
+"Energetic": "حماسي",
+"Reels · TikTok · Shorts": "ريلز · تيك توك · شورتس",
+"WhatsApp status": "حالة واتساب",
+"Square post": "منشور مربع",
+"YouTube · TV": "يوتيوب · تلفاز",
+"Keep as filmed": "كما صُوّر",
+"Instagram feed": "منشورات إنستغرام",
+"YouTube video": "فيديو يوتيوب",
+"Podcast clip": "مقطع بودكاست",
+"Promo or business": "ترويج أو عمل تجاري",
+"Text colour": "لون النص",
+"Outline": "الحدّ",
+"Shadow": "ظل",
+"Glow": "توهج",
+"Hollow": "مفرّغ",
+"Bold": "عريض",
+"Capitals": "أحرف كبيرة",
+"Strong": "قوي",
+"Good": "جيد",
+"Preparing photo {x}…": "جارٍ تجهيز الصورة {x}…",
+"That photo couldn’t be used.": "تعذّر استخدام هذه الصورة.",
+"Try another photo, or a video.": "جرّب صورة أخرى أو فيديو.",
+"Auto-edit works like a professional editor: tell it what you’re making, and it watches the video and suggests ideas — a strong opening, cleaner speech, captions, animated numbers and titles, smooth transitions. It can also find the best short clips in a long video. The AI editor takes requests in your own words. Every change can be undone.": "التعديل التلقائي يعمل كمحرّر محترف: أخبره بنوع الفيديو فيشاهده ويقترح أفكارًا — افتتاحية قوية، كلام أنظف، ترجمة، أرقام وعناوين متحركة، وانتقالات ناعمة. ويمكنه أيضًا إيجاد أفضل المقاطع القصيرة من فيديو طويل. والمحرّر الذكي ينفذ طلباتك بكلماتك. ويمكن التراجع عن كل تغيير.",
 });
 /* core: helpers, data model, storage, timeline maths, analysis of the sound and picture */
 
@@ -1721,6 +1940,7 @@ function probeVideo(url) {
 }
 async function pickFile(file, more = []) {
   if (!file) return;
+  if (isImageFile(file)) { S.busy = t('Preparing photo {x}…', { x: file.name }); renderHome(); const f = await imageToClip(file); S.busy = null; if (!f) { S.homeWarn = { title: t('That photo couldn’t be used.'), body: t('Try another photo, or a video.') }; renderHome(); return; } file = f; }
   if (!/^video\//.test(file.type) && !/\.(mp4|mov|m4v|webm|mkv|3gp)$/i.test(file.name)) { S.homeWarn = { title: t('“{x}” isn’t a video', { x: file.name }), body: t('Choose a video from your photos or files.') }; renderHome(); return; }
   S.busy = t('Opening your video…'); renderHome();
   const url = URL.createObjectURL(file), pr = await probeVideo(url);
@@ -2142,8 +2362,11 @@ function setActive(d) {
 /* It is put a moment BEFORE the part (pre-roll) and started silently just before the cut, so at the cut it is
    already playing: phones take a while to start a paused video, which made every cut stutter. */
 const PRE = 0.45;
+/* part i carries straight on from part i-1 (a plain split): same video, no gap, no freeze */
+function contig(p, i) { const a = p.segs[i - 1], b = p.segs[i]; return !!(a && b && !a.freeze && !b.freeze && segClip(p, a).id === segClip(p, b).id && Math.abs(b.in - a.out) < 0.06); }
 function prepNext() {
-  const p = cur(), i = S.segi + 1, g = p.segs[i], d = S.decks.find(x => x !== S.video); if (!g || !d) return;
+  const p = cur(); let i = S.segi + 1; while (i < p.segs.length && contig(p, i)) i++;
+  const g = p.segs[i], d = S.decks.find(x => x !== S.video); if (!g || !d) return;
   if (d._seg === i && d._pre?.started && !d.paused) return;
   const c = segClip(p, g), local = g.in - c.off, rate = partRate(g, 0) || 1;
   if (!d.paused) d.pause();
@@ -2175,7 +2398,8 @@ function showSrc(gsrc) {
 async function addClips(files, atEnd) {
   const p = cur(); if (!p || !files.length) return;
   let added = 0; const newSegs = [], at = atEnd ? p.segs.length : (() => { const m = outToSrc(p, S.t); return S.t - m.start < (m.end - m.start) / 2 ? m.i : m.i + 1; })();
-  for (const file of files) {
+  for (let file of files) {
+    if (isImageFile(file)) { S.busy = t('Preparing photo {x}…', { x: file.name }); renderBusy(); file = await imageToClip(file); if (!file) { toast(t('That photo couldn’t be used.')); continue; } }
     if (!/^video\//.test(file.type) && !/\.(mp4|mov|m4v|webm|mkv|3gp)$/i.test(file.name)) continue;
     S.busy = t('Adding {x}…', { x: file.name }); renderBusy();
     const url = URL.createObjectURL(file), pr = await probeVideo(url); pr.v.remove();
@@ -2210,6 +2434,26 @@ function removeClip(clipId) {
 }
 /* the clips in the order they appear in the edit (a clip used twice shows once) */
 function clipsInOrder(p) { const seen = new Set(), out = []; for (const g of p.segs) { const c = segClip(p, g); if (!seen.has(c.id)) { seen.add(c.id); out.push(c); } } return out; }
+
+/* ---------- photos on the main track: each photo becomes a short silent clip (3 seconds) ---------- */
+const isImageFile = f => /^image\//.test(f.type) || /\.(jpe?g|png|heic|webp|gif)$/i.test(f.name);
+async function imageToClip(file, sec = 3) {
+  try {
+    const url = URL.createObjectURL(file), im = new Image(); await new Promise((r, j) => { im.onload = r; im.onerror = j; im.src = url; });
+    const k = Math.min(1, 1080 / Math.max(im.naturalWidth, im.naturalHeight)), W = Math.round(im.naturalWidth * k / 2) * 2, H = Math.round(im.naturalHeight * k / 2) * 2;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d'); x.drawImage(im, 0, 0, W, H); URL.revokeObjectURL(url);
+    // a silent sound track too, so every clip has sound for the tools that read it
+    const ac = new (window.AudioContext || window.webkitAudioContext)(), dest = ac.createMediaStreamDestination(), o = ac.createConstantSource ? ac.createConstantSource() : ac.createOscillator(), g = ac.createGain(); g.gain.value = 0; o.connect(g); g.connect(dest); o.start();
+    const stream = new MediaStream([...cv.captureStream(30).getVideoTracks(), ...dest.stream.getAudioTracks()]), mime = pickMime();
+    const rec = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 6e6 } : undefined), chunks = [];
+    rec.ondataavailable = e => e.data?.size && chunks.push(e.data);
+    const done = new Promise(r => rec.onstop = r); rec.start(500);
+    const t0 = performance.now(); await new Promise(r => { const step = () => { x.drawImage(im, 0, 0, W, H); if (performance.now() - t0 >= sec * 1000) return r(); requestAnimationFrame(step); }; step(); });
+    rec.stop(); await done; o.stop(); ac.close();
+    const type = (mime || 'video/webm').split(';')[0];
+    return new File(chunks, file.name.replace(/\.[^.]+$/, '') + (type.includes('mp4') ? '.mp4' : '.webm'), { type });
+  } catch (e) { console.warn('photo clip', e); return null; }
+}
 
 /* =====================================================================
    SOUND FROM ANY PHONE VIDEO
@@ -2726,7 +2970,8 @@ function drawTexts(ctx, W, H, p, tOut, hits) {
       return [cx, cy];
     };
     const animate = () => { };
-    if (tx.style === 'shape') {
+    if (tx.style === 'gfx') drawGfx(ctx, W, H, tx, tOut, place, hits);
+    else if (tx.style === 'shape') {
       const shp = SHAPES[tx.text] || SHAPES.ring, sz = base * 0.16 * tx.size, sc2 = sz / 24; const [cx, cy] = place(sz, sz);
       animate(cx, cy); ctx.translate(cx - sz / 2, cy - sz / 2); ctx.scale(sc2, sc2);
       const path = new Path2D(shp.d); ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 3; ctx.shadowOffsetY = 0.6;
@@ -2755,17 +3000,31 @@ function drawTexts(ctx, W, H, p, tOut, hits) {
       ctx.fillStyle = tx.color; ctx.textAlign = rtl ? 'right' : 'left'; ctx.fillText(shown, rtl ? x + bw - px * 0.7 : x + px * 0.7, cy, W * 0.7);
       hits?.push({ kind: 'text', id: tx.id, x, y, w: bw, h });
     } else {
-      const px = base * (tx.style === 'title' ? 0.085 : 0.062) * tx.size; ctx.font = `${fontWeight(f)} ${px}px ${fontStack(f)}`;
-      const lines = wrapLines(ctx, tx.text.split(/\s+/).filter(Boolean).map(w => ({ w })), W * 0.82).map(l => l.map(x => x.w).join(' '));
-      const lh = px * (tx.style === 'title' ? 1.18 : 1.32), tot = lines.length * lh, wMax = Math.max(...lines.map(l => ctx.measureText(l).width));
+      // plain text (title / marker): fill, outline, background box, shadow or glow, alignment, spacing, capitals
+      const px = base * (tx.style === 'title' ? 0.085 : 0.062) * tx.size, U = q => tx.upper ? q.toUpperCase() : q;
+      ctx.font = `${tx.italic ? 'italic ' : ''}${tx.bold ? 800 : fontWeight(f)} ${px}px ${fontStack(f)}`;
+      if ('letterSpacing' in ctx) ctx.letterSpacing = ((tx.spacing || 0) * px * 0.3) + 'px';
+      const bg = tx.bg || (tx.style === 'highlight' ? { color: '#ffd84d', a: 1, r: 0.3 } : null), st = tx.stroke, glow = tx.glow;
+      const shadow = tx.shadow ?? (bg || st?.w ? 0 : 1);
+      const lines = wrapLines(ctx, U(tx.text).split(/\s+/).filter(Boolean).map(w => ({ w })), W * 0.82).map(l => l.map(x => x.w).join(' '));
+      const lh = px * (tx.style === 'title' ? 1.18 : 1.32) * (tx.lineH || 1), tot = lines.length * lh, widths = lines.map(l => ctx.measureText(l).width), wMax = Math.max(...widths);
       const [cx, cy] = place(wMax, tot); animate(cx, cy);
-      let y = cy - tot / 2, used = 0; ctx.textAlign = 'center';
-      for (const l of lines) {
-        const part = anim === 'type' ? shown.slice(used, used + l.length) : l; used += l.length + 1; if (!part) { y += lh; continue; }
-        if (tx.style === 'highlight') { const w = ctx.measureText(l).width; ctx.fillStyle = '#ffd84d'; roundRect(ctx, cx - w / 2 - px * .35, y, w + px * .7, lh, px * .15); ctx.fill(); ctx.fillStyle = tx.color; ctx.fillText(part, cx, y + lh / 2); }
-        else { ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = px * 0.25; ctx.shadowOffsetY = px * 0.04; ctx.fillStyle = tx.color; ctx.fillText(part, cx, y + lh / 2); ctx.shadowColor = 'transparent'; }
+      const al = tx.align || 'center', shownU = U(shown);
+      let y = cy - tot / 2, used = 0; ctx.textAlign = 'left';
+      lines.forEach((l, li) => {
+        const part = anim === 'type' ? shownU.slice(used, used + l.length) : l; used += l.length + 1; if (!part) { y += lh; return; }
+        const w = widths[li], x = al === 'left' ? cx - wMax / 2 : al === 'right' ? cx + wMax / 2 - w : cx - w / 2;
+        if (bg) { ctx.save(); ctx.globalAlpha *= bg.a ?? 1; ctx.fillStyle = bg.color; roundRect(ctx, x - px * 0.35, y + lh * 0.04, w + px * 0.7, lh * 0.94, px * 0.45 * (bg.r ?? 0.3)); ctx.fill(); ctx.restore(); }
+        const py = y + lh / 2;
+        if (rtl) { ctx.textAlign = 'right'; }
+        const tx0 = rtl ? x + w : x;
+        if (glow) { ctx.save(); ctx.shadowColor = glow.color || '#3fd39a'; ctx.shadowBlur = px * 0.55 * (glow.a ?? 1); ctx.fillStyle = glow.color || '#3fd39a'; ctx.fillText(part, tx0, py); ctx.restore(); }
+        else if (shadow) { ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = px * 0.25 * shadow; ctx.shadowOffsetY = px * 0.04 * shadow; }
+        if (st?.w) { ctx.save(); ctx.shadowColor = 'transparent'; ctx.lineJoin = 'round'; ctx.miterLimit = 2; ctx.strokeStyle = st.color || '#000'; ctx.lineWidth = st.w * px * 0.28; ctx.strokeText(part, tx0, py); ctx.restore(); }
+        if (tx.color !== 'transparent') { ctx.fillStyle = tx.color; ctx.fillText(part, tx0, py); }
+        ctx.shadowColor = 'transparent'; ctx.textAlign = 'left';
         y += lh;
-      }
+      });
       hits?.push({ kind: 'text', id: tx.id, x: cx - wMax / 2 - px * 0.4, y: cy - tot / 2, w: wMax + px * 0.8, h: tot });
     }
     // the tap area follows where the item really is (moved, scaled, rotated)
@@ -3059,7 +3318,15 @@ function drawPrivacy(ctx, W, H, p, src, v, g) {
   const persons = [];
   for (const tr of p.tracks) { if (!tr.on || tr.kind !== 'person') continue; const b = trackBox(tr, src); if (!b) continue; persons.push(personShape(tr, b, src, M, pad) || coverRect(tr, boxOnCanvas(M, b), pad)); }
   for (const r of persons) {
-    if (pst === 'solid') coverRegion(ctx, W, H, r, 'solid', P.color || '#1c1c1e', 0);
+    if (pst === 'solid') {
+      // a plain rounded panel over the whole person: it never traces the body's outline
+      let x0 = r.x, y0 = r.y, x1 = r.x + r.w, y1 = r.y + r.h;
+      if (r.pts) for (let i = 0; i < r.pts.length; i += 2) { x0 = Math.min(x0, r.pts[i]); x1 = Math.max(x1, r.pts[i]); y0 = Math.min(y0, r.pts[i + 1]); y1 = Math.max(y1, r.pts[i + 1]); }
+      const m = Math.max(x1 - x0, y1 - y0) * 0.06; x0 -= m; y0 -= m; x1 += m; y1 += m;
+      const w = x1 - x0, h = y1 - y0, rad = Math.min(w, h) * 0.3;
+      ctx.save(); ctx.fillStyle = P.color || '#1c1c1e'; roundRect(ctx, x0, y0, w, h, rad); ctx.fill();
+      const gr = ctx.createLinearGradient(0, y0, 0, y1); gr.addColorStop(0, 'rgba(255,255,255,.07)'); gr.addColorStop(1, 'rgba(0,0,0,.12)'); ctx.fillStyle = gr; roundRect(ctx, x0, y0, w, h, rad); ctx.fill(); ctx.restore();
+    }
     else if (pst === 'erase') drawErase(ctx, W, H, r, persons, p, g, src);
     else drawSmudge(ctx, W, H, r, persons);
   }
@@ -4394,6 +4661,7 @@ function renderEditor() {
       <button class="play" data-act="toggle" id="playbtn" aria-label="${t('Play')}">${icon('play')}</button>
       <span class="end"><button class="icon-btn kfb" data-act="kf" id="kfbtn" hidden aria-label="${t('Keyframe')}">${icon('key')}</button><button class="icon-btn" data-act="undo" id="undo" aria-label="${t('Undo')}">${icon('undo', 'flip')}</button><button class="icon-btn" data-act="redo" id="redo" aria-label="${t('Redo')}">${icon('redo', 'flip')}</button><button class="icon-btn" data-act="fullscreen" aria-label="${t('Full screen')}">${icon('expand')}</button></span>
     </div>
+    <div class="fullbar" id="fullbar"><button class="icon-btn" data-act="fullscreen" aria-label="${t('Exit full screen')}">${icon('x')}</button><button class="play" data-act="toggle" id="fplay" aria-label="${t('Play')}">${icon('play')}</button><span class="tc num" id="ftc"></span><input type="range" class="range fseek" id="fseek" min="0" max="1000" step="1" value="0" aria-label="${t('Position')}"></div>
     <div class="tlwrap"><div class="tl" id="tl"><div class="tlin" id="tlin"></div></div><div class="ph"></div></div>
     <div id="tip"></div>
     <nav class="tools" id="tools"></nav>
@@ -4425,8 +4693,8 @@ function refresh() {
   const u = $('#undo'), r = $('#redo'); if (u) { u.disabled = !S.history.length; r.disabled = !S.future.length; }
   updateTc(); renderTools(); renderAsk(); renderTip(); drawTimeline(); drawPreview(); renderSheet(); updateAudio();
 }
-function updateTc() { const p = cur(), el = $('#tc'); if (el) el.innerHTML = `<b>${fmt(S.t)}</b> / ${fmt(outDur(p))}`; updateKeyBtn(); }
-function updatePlay() { const b = $('#playbtn'); if (b) { b.innerHTML = icon(S.playing ? 'pause' : 'play'); b.setAttribute('aria-label', t(S.playing ? 'Pause' : 'Play')); } $('#frame')?.classList.toggle('playing', S.playing); }
+function updateTc() { const p = cur(), el = $('#tc'); if (el) el.innerHTML = `<b>${fmt(S.t)}</b> / ${fmt(outDur(p))}`; updateKeyBtn(); if (S.full) { const f = $('#ftc'), s = $('#fseek'); if (f) f.textContent = `${fmt(S.t)} / ${fmt(outDur(p))}`; if (s && !S.fseeking) s.value = Math.round(S.t / Math.max(0.01, outDur(p)) * 1000); } }
+function updatePlay() { const fb = $('#fplay'); if (fb) fb.innerHTML = icon(S.playing ? 'pause' : 'play'); const b = $('#playbtn'); if (b) { b.innerHTML = icon(S.playing ? 'pause' : 'play'); b.setAttribute('aria-label', t(S.playing ? 'Pause' : 'Play')); } $('#frame')?.classList.toggle('playing', S.playing); }
 function layoutFrame() {
   const p = cur(), st = $('#stage'), fr = $('#frame'); if (!st || !fr || !p) return;
   const r = st.getBoundingClientRect(), a = frameAspect(p) || 16 / 9;
@@ -4466,12 +4734,13 @@ function updateAudio() {
 }
 
 /* ---------- bottom sheets ---------- */
-function openSheet(name, data = {}) { if (name === 'editor') S.editorSeen = true; if (name !== 'faces' && name !== 'people') S.selBlur = null; S.sheet = name; S.sheetData = data; S.liveLabel = null; renderSheet(); renderTools(); renderAsk(); renderTip(); drawTimeline(); drawPreview(); }
+function openSheet(name, data = {}) { if (data.id && ['text', 'phrases', 'shapes'].includes(name) && cur()?.texts.some(x => x.id === data.id)) S.sel = { k: 'text', id: data.id }; if (name === 'editor') S.editorSeen = true; if (name !== 'faces' && name !== 'people') S.selBlur = null; S.sheet = name; S.sheetData = data; S.liveLabel = null; renderSheet(); renderTools(); renderAsk(); renderTip(); drawTimeline(); drawPreview(); }
 function closeSheet() { S.sheet = null; S.sheetData = {}; S.selBlur = null; renderSheet(); renderTools(); renderAsk(); renderTip(); drawTimeline(); drawPreview(); }
 function renderSheet() {
   let root = $('#sheetRoot'); if (!root) { root = document.createElement('div'); root.id = 'sheetRoot'; document.body.appendChild(root); }
   const app = $('#app');
-  if (!S.sheet || S.sheet === 'trim' || (S.view !== 'editor' && !['help', 'privacy'].includes(S.sheet))) { root.innerHTML = ''; root.dataset.sheet = ''; if (app.classList.contains('sheeted')) { app.classList.remove('sheeted'); app.style.paddingBottom = ''; } return; }
+  if (!S.sheet || S.sheet === 'trim' || (S.view !== 'editor' && !['help', 'privacy'].includes(S.sheet))) { root.innerHTML = ''; root.dataset.sheet = ''; if (app.classList.contains('sheeted')) { app.classList.remove('sheeted'); app.style.paddingBottom = ''; if (S.view === 'editor') scrollToTime(); } return; }
+  if (S.sheetData?.id && ['text', 'phrases', 'shapes'].includes(S.sheet) && cur()?.texts.some(x => x.id === S.sheetData.id) && !isSel('text', S.sheetData.id)) { S.sel = { k: 'text', id: S.sheetData.id }; drawTimeline(); requestAnimationFrame(drawPreview); }
   const def = SHEETS[S.sheet](); const body = $('.sheet .body', root), keep = body?.scrollTop || 0, atEnd = body && body.scrollHeight - body.scrollTop - body.clientHeight < 40;
   const focusId = document.activeElement?.closest?.('.sheet') ? document.activeElement.id : null;
   const tall = ['editor', 'help', 'privacy', 'autoedit'].includes(S.sheet) || (S.sheet === 'captions' && S.sheetData.tab === 'lines');
@@ -4487,6 +4756,7 @@ function renderSheet() {
   $$('textarea', root).forEach(grow);
   if (focusId) $('#' + focusId)?.focus();
   if (S.sheet === 'filters') paintLookPreviews();
+  if (S.view === 'editor') scrollToTime();
 }
 function grow(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
 const seg = (act, curV, opts, extra = '') => `<div class="seg">${opts.map(([v, l]) => `<button class="${String(curV) === String(v) ? 'on' : ''}" data-act="${act}" data-v="${v}" ${extra}>${l}</button>`).join('')}</div>`;
@@ -4514,7 +4784,7 @@ const SHEETS = {
     <h4>${t("3. The tools")}</h4><p>${t("Edit, Audio, Text, Stickers, Overlay, Effects, Captions, Filters and Adjust work like in other editors. Audio has simple sounds (no music), voice-over, extract audio and voice effects.")}</p>
     <h4>${t("4. On the video")}</h4><p>${t("Drag a selected clip, text, sticker or overlay to move it, and pinch to resize and turn it. The diamond next to Play adds a keyframe, so position, size, turn and opacity can change over time.")}</p>
     <h4>${t("5. Privacy")}</h4><p>${t("Face blur hides faces and follows them. Modesty covers people who aren\u2019t dressed modestly, or removes them so the background shows instead.")}</p>
-    <h4>${t("6. Let it edit for you")}</h4><p>${t("Auto-edit removes pauses, filler sounds and stumbles. The AI editor takes requests in your own words, like \u201ccaptions bigger and yellow\u201d. Every change can be undone.")}</p>
+    <h4>${t("6. Let it edit for you")}</h4><p>${t("Auto-edit works like a professional editor: tell it what you’re making, and it watches the video and suggests ideas — a strong opening, cleaner speech, captions, animated numbers and titles, smooth transitions. It can also find the best short clips in a long video. The AI editor takes requests in your own words. Every change can be undone.")}</p>
     <h4>${t("7. Export")}</h4><p>${t("Tap Export, pick the resolution and frame rate, and keep the screen on while it saves. On iPhone, choose \u201cSave Video\u201d to put it in your Photos.")}</p>
     <h4>${t('Put the app on your home screen')}</h4><p>${t('On iPhone, open the app’s website in Safari, tap Share, then Add to Home Screen. It then opens like any app, full screen, and works offline after the first use.')}</p>
     <h4>${t('Not available yet')}</h4><p>${t('Playing a clip backwards, text-to-speech and stabilising shaky video aren’t in this version.')}</p>
@@ -4821,6 +5091,8 @@ function nextPart() {
   if (ni >= p.segs.length) { pause(); S.t = outDur(p); updateTc(); scrollToTime(); drawPreview(); return false; }
   const g2 = p.segs[ni], c2 = segClip(p, g2), local = g2.in - c2.off, d = S.decks.find(x => x !== v);
   const startFreeze = () => { S.frz = g2.freeze ? { t0: performance.now(), base: segStarts(p)[ni] } : null; };
+  // a plain split: the same video simply carries on
+  if (contig(p, ni) && !S.waiting && !v.paused) { S.segi = ni; const r = partRate(g2, 0) || 1; if (Math.abs(v.playbackRate - r) > 0.01) v.playbackRate = r; S.frz = null; return true; }
   // the waiting deck is already running from just before the cut: switch the moment it reaches the part
   if (d._seg === ni && d._pre?.started && !d.paused && !d.seeking) {
     if ((d.currentTime >= local - 0.03) || d.currentTime > local + 1) {
@@ -4884,13 +5156,26 @@ const engines = size => {
   return list;
 };
 const asrOptions = job => { const o = { task: job.task, chunk_length_s: 30, stride_length_s: 5, return_timestamps: job.word ? 'word' : true }; if (job.language) o.language = job.language; return o; };
+
+/* Whisper's own language guess: one step of the decoder after <|startoftranscript|>, best language token wins */
+const DETECT_SRC = `async function detectLang(asr, audio, Tensor, codes) {
+  const clip = audio.subarray(0, Math.min(audio.length, 16000 * 30));
+  const inp = await asr.processor(clip);
+  const ids = asr.tokenizer.model.tokens_to_ids, sot = ids.get('<|startoftranscript|>');
+  const out = await asr.model({ input_features: inp.input_features, decoder_input_ids: new Tensor('int64', BigInt64Array.from([BigInt(sot)]), [1, 1]) });
+  const lg = out.logits.data, V = out.logits.dims[out.logits.dims.length - 1], base = lg.length - V;
+  let best = null, bv = -Infinity;
+  for (const c of codes) { const id = ids.get('<|' + c + '|>'); if (id == null) continue; const v = lg[base + id]; if (v > bv) { bv = v; best = c; } }
+  return best;
+}`;
 let whisperWorker = null;
 function transcribeInWorker(job, onEvt) {
   return new Promise((res, rej) => {
     let heard = false;
     try {
       if (!whisperWorker) {
-        const src = `import { pipeline, env } from '${TRANSFORMERS_URL}';
+        const src = `import { pipeline, env, Tensor } from '${TRANSFORMERS_URL}';
+${DETECT_SRC}
 env.allowLocalModels = false;
 let asr = null, loaded = '';
 self.postMessage({ type: 'ready' });
@@ -4899,6 +5184,7 @@ self.onmessage = async (e) => {
   try {
     const key = d.model + (d.dtype || '');
     if (!asr || loaded !== key) { asr = await pipeline('automatic-speech-recognition', d.model, Object.assign({ progress_callback: (x) => self.postMessage({ type: 'progress', x }) }, d.dtype ? { dtype: d.dtype } : {})); loaded = key; }
+    if (!d.opts.language && d.codes) { try { const lang = await detectLang(asr, d.audio, Tensor, d.codes); if (lang) { d.opts.language = lang; self.postMessage({ type: 'lang', lang }); } } catch (err) { if (d.fallback) d.opts.language = d.fallback; self.postMessage({ type: 'lang', lang: d.fallback || null, err: String(err && err.message || err) }); } }
     self.postMessage({ type: 'listening' });
     self.postMessage({ type: 'done', out: await asr(d.audio, d.opts) });
   } catch (err) { self.postMessage({ type: 'error', message: String((err && (err.stack || err.message)) || err) }); }
@@ -4906,7 +5192,7 @@ self.onmessage = async (e) => {
         whisperWorker = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })), { type: 'module' });
       }
     } catch (e) { return rej({ startFail: true, message: String(e.message || e) }); }
-    const w = whisperWorker, msg = { audio: job.audio, model: job.model, dtype: job.dtype, opts: asrOptions(job) };
+    const w = whisperWorker, msg = { audio: job.audio, model: job.model, dtype: job.dtype, opts: asrOptions(job), codes: job.codes, fallback: job.fallback };
     const startTimer = setTimeout(() => { if (!heard) rej({ startFail: true, message: 'worker did not start' }); }, 20000);
     w.onmessage = e => {
       const m = e.data; heard = true; clearTimeout(startTimer);
@@ -4928,8 +5214,10 @@ async function transcribeInPage(job, onEvt) {
   if (location.protocol === 'file:') T.env.useBrowserCache = false;
   const key = job.model + (job.dtype || '');
   if (!mainAsr || mainKey !== key) { mainAsr = await T.pipeline('automatic-speech-recognition', job.model, Object.assign({ progress_callback: x => onEvt({ type: 'progress', x }) }, job.dtype ? { dtype: job.dtype } : {})); mainKey = key; }
+  const opts = asrOptions(job);
+  if (!opts.language && job.codes) { try { const detectLang = new Function('return ' + DETECT_SRC)(); const lang = await detectLang(mainAsr, job.audio, T.Tensor, job.codes); if (lang) { opts.language = lang; onEvt({ type: 'lang', lang }); } } catch (e) { if (job.fallback) opts.language = job.fallback; onEvt({ type: 'lang', lang: job.fallback || null, err: String(e.message || e) }); } }
   onEvt({ type: 'listening' }); await sleep(120);
-  return await mainAsr(job.audio, asrOptions(job));
+  return await mainAsr(job.audio, opts);
 }
 async function transcribe(job, onEvt) {
   if (location.protocol === 'file:') return transcribeInPage(job, onEvt);
@@ -4967,7 +5255,9 @@ async function makeCaptions(cfg) {
   S.capJob = { state: 'run', text: t('Preparing the sound…'), pct: null }; renderSheet();
   let audio; try { audio = await resample16k(S.audioBuf); } catch (e) { S.capJob = { state: 'error', text: t('The sound couldn’t be prepared.'), detail: String(e.message || e) }; renderSheet(); return false; }
   const inPage = location.protocol === 'file:';
-  const base = { audio, language: cfg.lang === 'auto' ? null : langEnglish(cfg.lang).toLowerCase(), task: cfg.out === 'en' && cfg.lang !== 'en' ? 'translate' : 'transcribe' };
+  // "Detect automatically": the speech program first works out the language, then writes in that same language
+  const base = { audio, language: cfg.lang === 'auto' ? null : cfg.lang, codes: LANGS.map(l => l[0]).filter(c => c !== 'auto'), fallback: UI_LANG === 'ar' ? 'ar' : null, task: cfg.out === 'en' && cfg.lang !== 'en' ? 'translate' : 'transcribe' };
+  let detected = null;
   // after the phone ran out of memory once, the lighter speech program is used
   let size = cfg.model || (HARD_LANGS.includes(cfg.lang) ? 'small' : 'base'); if (size === 'small' && lsGet('ve.capLite')) size = 'base';
   const list = engines(size);
@@ -4983,7 +5273,8 @@ async function makeCaptions(cfg) {
         files[m.x.file] = [m.x.loaded, m.x.total];
         const [l, tt] = Object.values(files).reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0]);
         S.capJob = { state: 'run', text: t('Downloading the free speech program… {a} of {b} MB. First time only.', { a: Math.round(l / 1048576), b: Math.round(tt / 1048576) }), pct: l / tt }; renderSheet();
-      } else if (m.type === 'listening') { S.capJob = { state: 'run', text: (eng.word ? t('Listening and writing captions word by word…') : t('Listening and writing captions…')) + ' ' + (inPage ? t('The page may stop responding for a minute or two. Please wait.') : t('This can take a few minutes on a phone.')), pct: null }; renderSheet(); }
+      } else if (m.type === 'lang') { if (m.lang) { detected = m.lang; base.language = m.lang; if (cfg.out === 'en' && m.lang === 'en') base.task = 'transcribe'; } else console.warn('language detection failed', m.err); }
+      else if (m.type === 'listening') { S.capJob = { state: 'run', text: (eng.word ? t('Listening and writing captions word by word…') : t('Listening and writing captions…')) + ' ' + (inPage ? t('The page may stop responding for a minute or two. Please wait.') : t('This can take a few minutes on a phone.')), pct: null }; renderSheet(); }
     };
     try {
       const out = await transcribe({ ...base, model: eng.model, dtype: eng.dtype, word: eng.word }, onEvt);
@@ -5008,7 +5299,7 @@ async function makeCaptions(cfg) {
   if (S.audio && !S.audio.none) { const thr = voicedThr() - 4; caps = caps.filter(c => loudness(c.s, c.e) > thr); }
   S.capJob = null;
   if (!caps.length) { S.capJob = { state: 'error', text: t('No speech was found. If people do speak in this video, choose the spoken language instead of detecting it, and try again.') }; renderSheet(); return false; }
-  commit('Create captions'); p.captions = caps; p.wordsExact = exact; p.capLang = cfg.out === 'en' ? 'en' : cfg.lang; p.cap.on = cfg.hidden ? false : true; p.cap.show = 'orig';
+  commit('Create captions'); p.captions = caps; p.wordsExact = exact; p.capLang = cfg.out === 'en' ? 'en' : (cfg.lang === 'auto' ? detected || 'auto' : cfg.lang); p.cap.on = cfg.hidden ? false : true; p.cap.show = 'orig';
   if (p.capLang === 'ur' && p.cap.arFont === 'Cairo') p.cap.arFont = 'Noto Nastaliq Urdu';
   ensureFont(p.cap.arFont);
   if (S.sheet === 'captions') S.sheetData = { tab: 'lines' };
@@ -5607,30 +5898,37 @@ async function runExport(prep) {
     for (let i = 0; i < p.segs.length; i++) {
       if (ctl.aborted) break;
       const g = p.segs[i], c = segClip(p, g), lin = g.in - c.off, lout = g.out - c.off;
-      if (i > 0) await nextReady;
-      if (rec.state === 'recording') rec.pause();
-      const pre = preOf(g, lin), want = lin - pre;
-      curD.playbackRate = partRate(g, 0) || 1; curD.muted = false; if (curD._g) curD._g.gain.value = 0; if (nextD._g) nextD._g.gain.value = 0;
-      if (!(curD.readyState >= 2 && !curD.seeking && curD.currentTime >= want - 0.1 && curD.currentTime <= lin + 0.02)) await seekTo(curD, c, want);
-      if (!g.freeze) {
-        curD._started = true; try { await curD.play(); } catch (e) { }
-        await new Promise(res => { const t0 = performance.now(), w = () => { if (ctl.aborted || performance.now() - t0 > 3000 || (pre > 0 ? curD.currentTime >= lin - 0.012 : curD.currentTime > lin + 0.004)) return res(); requestAnimationFrame(w); }; w(); });
-        if (curD._g) curD._g.gain.value = 1;
+      // a plain split (the next part carries straight on in the same video) just keeps playing: no pause, no jump
+      const cont = i > 0 && contig(p, i) && !curD.paused;
+      if (cont) { curD.playbackRate = partRate(g, 0) || 1; }
+      else {
+        if (i > 0) await nextReady;
+        if (rec.state === 'recording') rec.pause();
+        const pre = preOf(g, lin), want = lin - pre;
+        curD.playbackRate = partRate(g, 0) || 1; curD.muted = false; if (curD._g) curD._g.gain.value = 0; if (nextD._g) nextD._g.gain.value = 0;
+        if (!(curD.readyState >= 2 && !curD.seeking && curD.currentTime >= want - 0.1 && curD.currentTime <= lin + 0.02)) await seekTo(curD, c, want);
+        if (!g.freeze) {
+          curD._started = true; try { await curD.play(); } catch (e) { }
+          await new Promise(res => { const t0 = performance.now(), w = () => { if (ctl.aborted || performance.now() - t0 > 3000 || (pre > 0 ? curD.currentTime >= lin - 0.012 : curD.currentTime > lin + 0.004)) return res(); requestAnimationFrame(w); }; w(); });
+          if (curD._g) curD._g.gain.value = 1;
+        }
+        draw(curD, g);
+        if (rec.state === 'inactive') rec.start(1000); else if (rec.state === 'paused') rec.resume();
       }
-      draw(curD, g);
-      if (rec.state === 'inactive') rec.start(1000); else if (rec.state === 'paused') rec.resume();
       if (p.sounds.length) stopSnd = await playSounds(ac, dest, p, base, base + segLen(g));
-      if (mu) { try { mu.currentTime = base; } catch (e) { } }
+      if (mu && !cont) { try { mu.currentTime = base; } catch (e) { } }
       if (mu && base < (mu.duration || 0)) mu.play().catch(() => { });
       // while this part plays, the other player gets ready on the next part
-      const gn = p.segs[i + 1]; nextReady = gn ? (async () => { const cn = segClip(p, gn), ln = gn.in - cn.off; await seekTo(nextD, cn, ln - preOf(gn, ln)); })() : null;
+      const gn = p.segs[i + 1], gCont = gn && contig(p, i + 1); nextReady = gn && !gCont ? (async () => { const cn = segClip(p, gn), ln = gn.in - cn.off; await seekTo(nextD, cn, ln - preOf(gn, ln)); })() : null;
       const fz0 = performance.now(); g._fz = 0;
       await new Promise(res => { const step = () => {
         if (g.freeze) { g._fz = (performance.now() - fz0) / 1000; if (ctl.aborted || g._fz >= g.freeze) return res(); }
         else { if (ctl.aborted || curD.currentTime >= lout - 0.01 || curD.ended) return res(); if (curvePts(g)) { const r = partRate(g, partOut(g, (curD._off || 0) + curD.currentTime)); if (Math.abs(curD.playbackRate - r) > 0.02) curD.playbackRate = r; } }
         const tt = draw(curD, g); S.exp.pct = tt / total; const bar = $('#expbar'); if (bar) { bar.style.width = (S.exp.pct * 100) + '%'; $('#explead').textContent = t('Exporting… {n}%', { n: Math.round(S.exp.pct * 100) }); } requestAnimationFrame(step); }; step(); });
       if (stopSnd) { stopSnd(); stopSnd = null; }
-      delete g._fz; curD._started = false; curD.pause(); if (mu) mu.pause(); base += segLen(g);
+      delete g._fz; base += segLen(g); if (stopSnd) { stopSnd(); stopSnd = null; }
+      if (gCont) continue;
+      curD._started = false; curD.pause(); if (mu) mu.pause();
       if (gn) { [curD, nextD] = [nextD, curD]; }
     }
     if (rec.state === 'paused') rec.resume();
@@ -6067,7 +6365,7 @@ function thumbUrl(f) { if (!f.u) { try { f.u = f.c.toDataURL('image/jpeg', 0.6);
 function layerItems(p) {
   const total = outDur(p), out = { ov: [], text: [], fx: [], cap: [], snd: [], trk: [] };
   for (const o of p.overlays) out.ov.push({ k: 'ov', id: o.id, s: o.start, e: o.start + o.dur, label: o.name || t('Overlay'), thumb: o.thumb });
-  for (const x of p.texts) out.text.push({ k: 'text', id: x.id, s: x.start, e: x.start + x.dur, label: x.style === 'shape' ? t(SHAPES[x.text]?.n || 'Shape') : x.text, cls: x.style === 'shape' ? 'stk' : x.style === 'phrase' ? 'phr' : '' });
+  for (const x of p.texts) out.text.push({ k: 'text', id: x.id, s: x.start, e: x.start + x.dur, label: x.style === 'shape' ? t(SHAPES[x.text]?.n || 'Shape') : x.style === 'gfx' ? t(GFX_TYPES[x.gfx?.type]?.n || 'Graphic') + (x.text && x.gfx?.type !== 'stat' ? ' · ' + x.text : x.gfx?.type === 'stat' ? ' · ' + (x.gfx.prefix || '') + x.gfx.value + (x.gfx.suffix || '') : '') : x.text, cls: x.style === 'shape' ? 'stk' : x.style === 'phrase' ? 'phr' : x.style === 'gfx' ? 'gfx' : '' });
   for (const e of p.effects) { const r = e.whole ? { start: 0, end: total } : rangeOut(p, e.s, e.e); if (r) out.fx.push({ k: 'fx', id: e.id, s: r.start, e: r.end, label: t(EFFECTS[e.type]?.name || 'Effect') }); }
   for (const z of p.zooms) { const r = rangeOut(p, z.s, z.e); if (r) out.fx.push({ k: 'zoom', id: z.id, s: r.start, e: r.end, label: t('Zoom {n}%', { n: Math.round(z.scale * 100) }) }); }
   if (p.cap.on) for (const c of p.captions) { const r = rangeOut(p, c.s, c.e); if (r) out.cap.push({ k: 'cap', id: c.id, s: r.start + (p.cap.offset || 0), e: r.end + (p.cap.offset || 0), label: p.cap.show !== 'orig' && c.tr?.[p.cap.show] ? c.tr[p.cap.show] : c.text }); }
@@ -6141,6 +6439,8 @@ function scrollToTime() { const tl = $('#tl'); if (!tl) return; const want = S.t
 function onTlScroll() {
   const tl = $('#tl');
   if (Math.abs(tl.scrollLeft - S.expectScroll) <= 1 || S.tlDrag) return;
+  // a hidden timeline (a panel or full screen is open) jumps to 0 on its own: that is not the user scrolling
+  if (!tl.clientWidth || S.full || $('#app').classList.contains('sheeted')) return;
   if (S.playing) pause();
   S.t = clamp(tl.scrollLeft / S.pps, 0, outDur(cur())); S.expectScroll = tl.scrollLeft;
   if (!S.seekQueued) { S.seekQueued = true; requestAnimationFrame(() => { S.seekQueued = false; seekOut(S.t, true); }); }
@@ -6152,6 +6452,8 @@ function selectItem(k, id) {
   S.sel = k ? { k, id } : null; S.menu = null;
   if (S.sheet && !['export', 'help', 'privacy'].includes(S.sheet)) { S.sheet = null; S.sheetData = {}; renderSheet(); }
   if (k === 'trk') S.selBlur = id;
+  // the white line moves into the selected item, so it shows on the video with its frame
+  if (k && !['seg', 'trk'].includes(k)) { const sp = selSpan(); if (sp && (S.t < sp.s || S.t >= sp.s + sp.d)) { if (S.playing) pause(); seekOut(Math.min(sp.s + Math.min(0.4, sp.d / 2), outDur(cur()))); } }
   drawTimeline(); renderTools(); drawPreview(); updateKeyBtn();
 }
 /* the selected thing, wherever it lives */
@@ -6310,8 +6612,8 @@ const MAIN_TOOLS = [
   ['format', 'frame', 'Format'], ['canvas', 'canvas', 'Canvas'], ['clips', 'film', 'Clips'],
 ];
 const SUB_TOOLS = {
-  audio: [['sounds', 'sfx', 'Sounds'], ['record', 'mic', 'Record'], ['import', 'plus', 'From files'], ['extract', 'extract', 'Extract audio'], ['voicefx', 'wave', 'Voice effects'], ['audioclean', 'volume', 'Clean up']],
-  text: [['addtext', 'plus', 'Add text'], ['templates', 'template', 'Templates'], ['autocap', 'cc', 'Auto captions'], ['phrases', 'quote', 'Phrases'], ['stickers', 'sticker', 'Stickers']],
+  audio: [['sounds', 'sfx', 'Sounds'], ['record', 'mic', 'Record'], ['import', 'plus', 'From files'], ['extract', 'extract', 'Extract audio'], ['audioclean', 'volume', 'Clean up']],
+  text: [['addtext', 'plus', 'Add text'], ['graphics', 'sparkle', 'Graphics'], ['templates', 'template', 'Templates'], ['autocap', 'cc', 'Auto captions'], ['phrases', 'quote', 'Phrases'], ['stickers', 'sticker', 'Stickers']],
   overlay: [['addov', 'plus', 'Add overlay']],
   effects: [['videofx', 'sparkle', 'Video effects'], ['zooms', 'zoom', 'Zoom-ins'], ['transitions', 'trans', 'Transitions']],
 };
@@ -6321,7 +6623,7 @@ const CTX_TOOLS = {
   text: [['textedit', 'type', 'Edit'], ['anim', 'anim', 'Animation'], ['xform', 'rotate', 'Transform'], ['opacity', 'opacity', 'Opacity'], ['split', 'cut', 'Split'], ['dup', 'dup', 'Duplicate'], ['del', 'trash', 'Delete']],
   fx: [['fxtype', 'replace', 'Replace'], ['fxwhole', 'frame', 'Whole video'], ['dup', 'dup', 'Duplicate'], ['del', 'trash', 'Delete']],
   zoom: [['del', 'trash', 'Delete']],
-  snd: [['pvol', 'volume', 'Volume'], ['fades', 'fade', 'Fade'], ['voicefx', 'wave', 'Voice effect'], ['split', 'cut', 'Split'], ['dup', 'dup', 'Duplicate'], ['del', 'trash', 'Delete']],
+  snd: [['pvol', 'volume', 'Volume'], ['fades', 'fade', 'Fade'], ['split', 'cut', 'Split'], ['dup', 'dup', 'Duplicate'], ['del', 'trash', 'Delete']],
   cap: [['capedit', 'type', 'Edit'], ['capstyle', 'cc', 'Style'], ['capdelall', 'trash', 'Delete all']],
   trk: [['trkopen', 'shield', 'Settings'], ['trkoff', 'eye', 'Show or hide'], ['del', 'trash', 'Delete']],
 };
@@ -6334,6 +6636,7 @@ function renderTools() {
   if (o) {
     const k = S.sel.k; list = CTX_TOOLS[k] || []; back = 'desel'; title = t(SEL_NAME[k]);
     if (k === 'text' && o.style === 'shape') list = list.filter(x => x[0] !== 'textedit');
+    if (k === 'text' && o.style === 'gfx') list = [['gfxedit', 'type', 'Edit'], ['anim', 'anim', 'Animation'], ['xform', 'rotate', 'Transform'], ['opacity', 'opacity', 'Opacity'], ['split', 'cut', 'Split'], ['dup', 'dup', 'Duplicate'], ['del', 'trash', 'Delete']];
     if (k === 'ov' && o.kind === 'image') list = list.filter(x => !['pvol', 'pspeed'].includes(x[0]));
     if (k === 'trk') list = list.map(x => x[0] === 'trkoff' ? [x[0], o.on ? 'eyeoff' : 'eye', o.on ? 'Hide cover' : 'Show cover'] : x);
     if (k === 'seg' && o.freeze) list = list.filter(x => !['pspeed', 'freeze', 'extract', 'pvol'].includes(x[0]));
@@ -6379,7 +6682,9 @@ function openTool(id) {
     case 'addtext': { const x = addText({ style: 'title', text: t('Your text'), pos: 'middle', start: S.t, dur: 3, font: 'Montserrat' }); S.sel = { k: 'text', id: x.id }; S.menu = null; openSheet('text', { id: x.id }); setTimeout(() => { const i = $('#textval'); i?.focus(); i?.select(); }, 60); return; }
     case 'templates': return sheet('text');
     case 'phrases': return sheet('phrases');
-    case 'textedit': return o?.style === 'phrase' ? sheet('phrases', { id: o.id }) : o?.style === 'shape' ? sheet('shapes', { id: o.id }) : sheet('text', { id: o?.id });
+    case 'graphics': return sheet('graphics');
+    case 'gfxedit': return sheet('gfxedit');
+    case 'textedit': return o?.style === 'gfx' ? sheet('gfxedit') : o?.style === 'phrase' ? sheet('phrases', { id: o.id }) : o?.style === 'shape' ? sheet('shapes', { id: o.id }) : sheet('text', { id: o?.id });
     // overlay & effects
     case 'addov': return $('#ovpicker').click();
     case 'videofx': return sheet('effects');
@@ -6528,7 +6833,7 @@ function bindPreview() {
   c.addEventListener('pointerdown', e => {
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); try { c.setPointerCapture(e.pointerId); } catch (q) { }
     const r = c.getBoundingClientRect(), sx = c.width / r.width, sy = c.height / r.height, p = cur();
-    if (pts.size === 2) {
+    if (pts.size === 2 && !S.full) {
       // two fingers: resize and turn the selected item
       const o = selObj(p), k = S.sel?.k; if (!o || !['seg', 'ov', 'text'].includes(k)) { g0 = null; return; }
       const [a, b] = [...pts.values()]; pause(); if (!g0?.committed) commit('Resize');
@@ -6539,7 +6844,8 @@ function bindPreview() {
     const selK = S.sel?.k, selO = selObj(p);
     // what this finger moves: what's under it, or the selected clip/overlay if the finger is on it
     let target = null;
-    if (hit) target = { kind: hit.kind, id: hit.id, hit };
+    if (S.full) target = null;
+    else if (hit) target = { kind: hit.kind, id: hit.id, hit };
     else if (selO && selK === 'seg') target = { kind: 'seg', id: selO.id };
     g0 = { x0: e.clientX, y0: e.clientY, r, target, moved: false };
   });
@@ -6601,17 +6907,17 @@ function bindPreview() {
       else selectItem(tg.kind, tg.id);
       return;
     }
-    if (S.sel) { selectItem(null); return; }
+    if (S.sel && !S.full) { selectItem(null); return; }
     S.playing ? pause() : play();
   };
   c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
 }
 /* the white frame around the selected item, drawn on top of the preview */
 function drawSelFrame(ctx) {
-  const p = cur(), o = selObj(p), k = S.sel?.k; if (!o || S.playing) return;
+  const p = cur(), o = selObj(p), k = S.sel?.k; if (!o || S.playing || S.full) return;
   const W = ctx.canvas.width, H = ctx.canvas.height; let box = null;
   if (k === 'seg') { const xf = S.rs.mainXf; if (!xf) return; const sp = selSpan(p); if (!sp || S.t < sp.s - 0.01 || S.t > sp.s + sp.d) return; box = { cx: W / 2 + ((xf.x ?? 0.5) - 0.5 + xf.dx) * W, cy: H / 2 + ((xf.y ?? 0.5) - 0.5 + xf.dy) * H, w: W * xf.sc, h: H * xf.sc, rot: xf.rot }; }
-  else { const h = (S.rs.hits || []).find(q => q.id === o.id); if (!h) return; box = { cx: h.cx ?? h.x + h.w / 2, cy: h.cy ?? h.y + h.h / 2, w: h.w, h: h.h, rot: h.rot || 0 }; if (k === 'text' && o._c) box.rot = 0; }
+  else { const h = (S.rs.hits || []).find(q => q.id === o.id); if (!h) return; box = { cx: h.cx ?? h.x + h.w / 2, cy: h.cy ?? h.y + h.h / 2, w: h.w, h: h.h, rot: h.rot || 0 }; }
   const dpr = W / ctx.canvas.getBoundingClientRect().width || 1;
   ctx.save(); ctx.translate(box.cx, box.cy); if (box.rot) ctx.rotate(box.rot * Math.PI / 180);
   ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5 * dpr; ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 3 * dpr;
@@ -6648,15 +6954,6 @@ Object.assign(SHEETS, {
       <div class="row"><button class="btn" style="flex:1" data-act="imute">${icon(o.mute ? 'volume' : 'mute', 's')}${o.mute ? t('Turn sound on') : t('Mute')}</button>${k === 'seg' ? `<button class="btn" style="flex:1" data-act="ivolall">${t('Apply to all clips')}</button>` : ''}</div>` };
   },
   fades: () => { const o = itemOf(); if (!o) return { title: t('Fade'), body: '' }; return { title: t('Fade'), body: `${range('i.fadeIn', o.fadeIn || 0, 0, Math.min(10, o.dur / 2), 0.1, t('Fade in'), (o.fadeIn || 0).toFixed(1) + 's')}${range('i.fadeOut', o.fadeOut || 0, 0, Math.min(10, o.dur / 2), 0.1, t('Fade out'), (o.fadeOut || 0).toFixed(1) + 's')}` }; },
-  anim: () => {
-    const o = itemOf(), k = S.sel?.k; if (!o) return { title: t('Animation'), body: '' };
-    const A = o.anim?.legacy ? { ...defaultAnim(), ...legacyAnim(o.anim.legacy), legacy: o.anim.legacy } : (o.anim || defaultAnim());
-    const tab = S.sheetData.tab || 'in', list = tab === 'in' ? { ...(k === 'text' ? { type: 'Typewriter' } : {}), ...ANIMS_IN } : tab === 'out' ? ANIMS_OUT : ANIMS_COMBO, curA = A[tab] || null;
-    const len = k === 'seg' ? segLen(o) : o.dur, dk = tab === 'in' ? 'inD' : 'outD';
-    return { title: t('Animation'), body: `${tabs('animtab', tab, [['in', t('In')], ['out', t('Out')], ['combo', t('Combo')]])}
-      <div class="acards ${tab}">${animCard(tab, 'none', 'None', !curA)}${Object.entries(list).map(([id, n]) => animCard(tab, id, n, curA === id)).join('')}</div>
-      ${curA && tab !== 'combo' ? range('i.' + dk, A[dk] ?? 0.5, 0.1, Math.max(0.2, Math.min(5, len * 0.9)), 0.05, t('Duration'), (A[dk] ?? 0.5).toFixed(1) + 's') : ''}` };
-  },
   crop: () => {
     const o = itemOf(); if (!o) return { title: t('Crop'), body: '' }; const c = o.crop || {};
     return { title: t('Crop'), body: `<div class="cards c4">${[['free', t('Original')], ['1:1', '1:1'], ['9:16', '9:16'], ['16:9', '16:9'], ['4:5', '4:5'], ['3:4', '3:4'], ['4:3', '4:3'], ['2:1', '2:1']].map(([v, l]) => `<button class="card mini ${(c.r || 'free') === v ? 'on' : ''}" data-act="icrop" data-v="${v}"><span class="t">${l}</span></button>`).join('')}</div>
@@ -6731,7 +7028,13 @@ Object.assign(ACT, {
   muteall: () => { const p = cur(); commit(p.audio.muteAll ? 'Sound on' : 'Mute clip sound'); p.audio.muteAll = !p.audio.muteAll; changed(); },
   trpick: el => { const i = +el.dataset.i, p = cur(); pause(); seekOut(Math.max(0, segStarts(p)[i] - 0.01)); openSheet('trone', { i }); },
   kf: () => toggleKey(),
-  fullscreen: () => { const a = $('#app'); a.classList.toggle('full'); layoutFrame(); },
+  fullscreen: () => {
+    // a clean full-screen view to check the edit: just the video, play, and a progress bar
+    S.full = !S.full; const a = $('#app'); a.classList.toggle('full', S.full);
+    if (S.full) { if (S.sheet) closeSheet(); S.sel = null; S.menu = null; renderTools(); try { document.documentElement.requestFullscreen?.().catch(() => { }); } catch (e) { } }
+    else { try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) { } }
+    layoutFrame(); updateTc(); drawPreview(); if (!S.full) scrollToTime();
+  },
   spdtab: el => { S.sheetData.tab = el.dataset.v; renderSheet(); },
   ispeed: el => itemSet('Speed', (o, k) => { const v = +el.dataset.v; if (k === 'ov') o.dur = +(o.dur * (o.speed || 1) / v).toFixed(3); o.speed = v; if (k === 'seg') o.curve = null; }),
   icurve: el => { itemSet('Speed curve', o => { o.curve = el.dataset.v === 'none' ? null : { id: el.dataset.v }; }); previewItem(); },
@@ -6821,5 +7124,542 @@ async function replaceWith(file) {
 $('#ovpicker').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; addOverlayFile(f); });
 $('#sndpicker').addEventListener('change', async e => { const f = e.target.files[0]; e.target.value = ''; if (f && cur()) { const s = await addSoundFile(f, 'file'); if (s) { S.menu = null; renderTools(); toast(t('Sound added at {t}', { t: fmt(s.start) })); } } });
 $('#replacepicker').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; replaceWith(f); });
+
+/* =====================================================================
+   TEXT EDITOR, CapCut-style: the words on top, then one button per area — Style, Font, Animation, Layout.
+   ===================================================================== */
+const TEXT_LOOKS = {
+  plain: { n: 'Shadow', p: { color: '#ffffff', stroke: null, bg: null, glow: null, shadow: 1 } },
+  outline: { n: 'Outline', p: { color: '#ffffff', stroke: { color: '#000000', w: 0.5 }, bg: null, glow: null, shadow: 0 } },
+  bold: { n: 'Bold yellow', p: { color: '#ffd84d', stroke: { color: '#000000', w: 0.6 }, bg: null, glow: null, shadow: 0 } },
+  boxdark: { n: 'Dark box', p: { color: '#ffffff', stroke: null, bg: { color: '#000000', a: 0.72, r: 0.35 }, glow: null, shadow: 0 } },
+  boxlight: { n: 'Light box', p: { color: '#111111', stroke: null, bg: { color: '#ffffff', a: 1, r: 0.35 }, glow: null, shadow: 0 } },
+  marker: { n: 'Marker', p: { color: '#111111', stroke: null, bg: { color: '#ffd84d', a: 1, r: 0.2 }, glow: null, shadow: 0 } },
+  jade: { n: 'Jade', p: { color: '#ffffff', stroke: null, bg: { color: '#16a06a', a: 1, r: 0.5 }, glow: null, shadow: 0 } },
+  red: { n: 'Alert', p: { color: '#ffffff', stroke: null, bg: { color: '#e5484d', a: 1, r: 0.25 }, glow: null, shadow: 0 } },
+  glow: { n: 'Glow', p: { color: '#ffffff', stroke: null, bg: null, glow: { color: '#3fd39a', a: 1 }, shadow: 0 } },
+  glowblue: { n: 'Blue glow', p: { color: '#e9fbff', stroke: null, bg: null, glow: { color: '#5ee7ff', a: 1 }, shadow: 0 } },
+  hollow: { n: 'Hollow', p: { color: 'transparent', stroke: { color: '#ffffff', w: 0.35 }, bg: null, glow: null, shadow: 0 } },
+  cream: { n: 'Cream', p: { color: '#f3e9d2', stroke: null, bg: null, glow: null, shadow: 0.8 } },
+};
+const lookCss = q => { const s = []; s.push(`color:${q.color === 'transparent' ? 'transparent' : q.color}`); if (q.bg) s.push(`background:${q.bg.color}${q.bg.a < 1 ? Math.round(q.bg.a * 255).toString(16).padStart(2, '0') : ''}`); if (q.stroke) s.push(`-webkit-text-stroke:${Math.max(1, q.stroke.w * 3)}px ${q.stroke.color}`); if (q.glow) s.push(`text-shadow:0 0 8px ${q.glow.color}`); else if (q.shadow) s.push('text-shadow:0 2px 4px rgba(0,0,0,.8)'); return s.join(';'); };
+const oldTextSheet = SHEETS.text;
+SHEETS.text = () => {
+  const p = cur(), d = S.sheetData, x = p.texts.find(q => q.id === d.id && ['title', 'label', 'highlight'].includes(q.style));
+  if (!x) return oldTextSheet();
+  if (!isSel('text', x.id)) S.sel = { k: 'text', id: x.id };
+  const tab = d.tab || 'style';
+  const head = `<div class="field"><input class="input" id="textval" value="${esc(x.text)}" data-k="textval" dir="auto" aria-label="${t('Words')}"></div>
+    ${tabs('ttab', tab, [['style', t('Style')], ['font', t('Font')], ['anim', t('Animation')], ['layout', t('Layout')]])}`;
+  let body = '';
+  if (tab === 'style') {
+    const cs = (act, val) => `<div class="swatches">${['#ffffff', '#111111', '#ffd84d', '#ff6b5a', '#5ee7ff', '#3fd39a', '#f3e9d2', '#e2b76a'].map(c => `<button class="sw ${String(val).toLowerCase() === c ? 'on' : ''}" style="background:${c}" data-act="${act}" data-v="${c}"></button>`).join('')}<label class="sw sw-custom"><input type="color" value="${val && val !== 'transparent' ? val : '#ffffff'}" data-k="${act}"></label></div>`;
+    body = `<div class="tlooks">${Object.entries(TEXT_LOOKS).map(([k, q]) => `<button class="tlook" data-act="tlook" data-v="${k}"><span style="${lookCss(q.p)}">Aa</span><i>${t(q.n)}</i></button>`).join('')}</div>
+      <div class="field"><div class="lbl">${t('Text colour')}</div>${cs('tcol', x.color)}</div>
+      <div class="field"><div class="lbl">${t('Outline')}</div>${cs('tstrokec', x.stroke?.color || '#000000')}</div>${range('t.strokew', x.stroke?.w || 0, 0, 1, 0.01, t('Outline width'), pct(x.stroke?.w || 0))}
+      <div class="field"><div class="lbl">${t('Background')}</div>${cs('tbgc', x.bg?.color || '#000000')}</div>${range('t.bga', x.bg ? x.bg.a ?? 1 : 0, 0, 1, 0.01, t('Background opacity'), pct(x.bg ? x.bg.a ?? 1 : 0))}${x.bg ? range('t.bgr', x.bg.r ?? 0.3, 0, 1, 0.01, t('Round corners'), pct(x.bg.r ?? 0.3)) : ''}
+      ${range('t.shadow', x.shadow ?? (x.bg || x.stroke?.w ? 0 : 1), 0, 1, 0.01, t('Shadow'), pct(x.shadow ?? (x.bg || x.stroke?.w ? 0 : 1)))}
+      ${range('t.opacity', x.opacity ?? 1, 0, 1, 0.01, t('Opacity'), pct(x.opacity ?? 1))}`;
+  } else if (tab === 'font') {
+    const isAr = ARABIC_SCRIPT.test(x.text);
+    const list = isAr ? [...AR_FONTS, ...FONTS] : [...FONTS, ...AR_FONTS];
+    body = `<div class="fgrid">${list.map(([f]) => `<button class="fopt ${x.font === f ? 'on' : ''}" data-act="tfont" data-v="${esc(f)}" style="font-family:${fontStack(f)};font-weight:${fontWeight(f)}">${isArFont(f) ? 'نص عربي' : 'Aa Text'}<i>${esc(f)}</i></button>`).join('')}</div>
+      <div class="row"><button class="btn sm ${x.bold ? 'primary' : ''}" data-act="ttog" data-v="bold"><b>B</b> ${t('Bold')}</button><button class="btn sm ${x.italic ? 'primary' : ''}" data-act="ttog" data-v="italic"><i>I</i> ${t('Italic')}</button><button class="btn sm ${x.upper ? 'primary' : ''}" data-act="ttog" data-v="upper">AA ${t('Capitals')}</button></div>`;
+  } else if (tab === 'anim') {
+    body = animBody(x, 'text', d.atab || 'in', 'tatab');
+  } else {
+    body = `${range('textsize', x.size, 0.3, 3, 0.05, t('Size'), pct(x.size))}
+      <div class="field"><div class="lbl">${t('Alignment')}</div>${seg('talign', x.align || 'center', [['left', t('Left')], ['center', t('Centre')], ['right', t('Right')]])}</div>
+      ${range('t.spacing', x.spacing || 0, -0.3, 1, 0.01, t('Letter spacing'), Math.round((x.spacing || 0) * 100))}
+      ${range('t.lineH', x.lineH || 1, 0.7, 2, 0.01, t('Line spacing'), pct(x.lineH || 1))}
+      <div class="field"><div class="lbl">${t('Position')}<span class="v">${t('or drag it on the video')}</span></div>${seg('textpos', x.x != null ? '' : x.pos, [['top', t('Top')], ['middle', t('Middle')], ['bottom', t('Bottom')]])}</div>
+      ${range('i.rot', x.rot || 0, -180, 180, 1, t('Rotate'), Math.round(x.rot || 0) + '°')}
+      <div class="field"><div class="lbl">${t('Show for')}</div>${durSeg('textdur', x)}</div>
+      <div class="row"><button class="btn ghost" data-act="textback">${icon('back', 's flip')}${t('All texts')}</button><span style="flex:1"></span><button class="btn danger" data-act="textdel">${icon('trash', 's')}${t('Delete')}</button></div>`;
+  }
+  return { title: t('Edit text'), body: head + body };
+};
+/* the animation picker, shared by the Animation panel and the text editor */
+function animBody(o, k, tab, act) {
+  const A = o.anim?.legacy ? { ...defaultAnim(), ...legacyAnim(o.anim.legacy), legacy: o.anim.legacy } : (o.anim || defaultAnim());
+  const list = tab === 'in' ? { ...(k === 'text' ? { type: 'Typewriter' } : {}), ...ANIMS_IN } : tab === 'out' ? ANIMS_OUT : ANIMS_COMBO, curA = A[tab] || null;
+  const len = k === 'seg' ? segLen(o) : o.dur, dk = tab === 'in' ? 'inD' : 'outD';
+  return `${tabs(act, tab, [['in', t('In')], ['out', t('Out')], ['combo', t('Combo')]])}
+    <div class="acards ${tab}">${animCard(tab, 'none', 'None', !curA)}${Object.entries(list).map(([id, n]) => animCard(tab, id, n, curA === id)).join('')}</div>
+    ${curA && tab !== 'combo' ? range('i.' + dk, A[dk] ?? 0.5, 0.1, Math.max(0.2, Math.min(5, len * 0.9)), 0.05, t('Duration'), (A[dk] ?? 0.5).toFixed(1) + 's') : ''}`;
+}
+SHEETS.anim = () => { const o = itemOf(), k = S.sel?.k; if (!o) return { title: t('Animation'), body: '' }; return { title: t('Animation'), body: animBody(o, k, S.sheetData.tab || 'in', 'animtab') }; };
+const txSet = (label, fn) => { const x = curText(); if (!x) return; commit(label); fn(x); changed(); };
+Object.assign(ACT, {
+  ttab: el => { S.sheetData.tab = el.dataset.v; renderSheet(); },
+  tatab: el => { S.sheetData.atab = el.dataset.v; renderSheet(); },
+  tlook: el => txSet('Text style', x => { Object.assign(x, clone(TEXT_LOOKS[el.dataset.v].p)); if (x.style === 'highlight') x.style = 'title'; }),
+  tcol: el => txSet('Text colour', x => x.color = el.dataset.v),
+  tstrokec: el => txSet('Outline', x => { x.stroke = { w: x.stroke?.w || 0.4, color: el.dataset.v }; }),
+  tbgc: el => txSet('Background', x => { x.bg = { a: x.bg?.a ?? 0.8, r: x.bg?.r ?? 0.3, color: el.dataset.v }; if (x.style === 'highlight') x.style = 'title'; }),
+  tfont: el => txSet('Font', x => { x.font = el.dataset.v; ensureFont(x.font); }),
+  ttog: el => txSet('Text style', x => { x[el.dataset.v] = !x[el.dataset.v]; }),
+  talign: el => txSet('Alignment', x => x.align = el.dataset.v),
+});
+document.addEventListener('input', e => {
+  const el = e.target, k = el.dataset?.k; if (!k) return;
+  const x = curText(); if (!x) return; const v = +el.value;
+  const L = (label, fn, shown) => { live(label, () => fn(x)); if (shown != null) showVal(k, shown); };
+  switch (k) {
+    case 't.strokew': L('Outline', x => { x.stroke = { color: x.stroke?.color || '#000000', w: v }; }, pct(v)); break;
+    case 't.bga': L('Background', x => { x.bg = v > 0 ? { color: x.bg?.color || '#000000', r: x.bg?.r ?? 0.3, a: v } : null; if (x.style === 'highlight') x.style = 'title'; }, pct(v)); break;
+    case 't.bgr': L('Background', x => { if (x.bg) x.bg.r = v; }, pct(v)); break;
+    case 't.shadow': L('Shadow', x => x.shadow = v, pct(v)); break;
+    case 't.opacity': L('Opacity', x => x.opacity = v, pct(v)); break;
+    case 't.spacing': L('Letter spacing', x => x.spacing = v, Math.round(v * 100)); break;
+    case 't.lineH': L('Line spacing', x => x.lineH = v, pct(v)); break;
+    case 'tcol': L('Text colour', x => x.color = el.value); break;
+    case 'tstrokec': L('Outline', x => { x.stroke = { w: x.stroke?.w || 0.4, color: el.value }; }); break;
+    case 'tbgc': L('Background', x => { x.bg = { a: x.bg?.a ?? 0.8, r: x.bg?.r ?? 0.3, color: el.value }; }); break;
+  }
+});
+
+$('#app').addEventListener('input', e => { if (e.target.id !== 'fseek') return; S.fseeking = true; if (S.playing) pause(); seekOut(+e.target.value / 1000 * outDur(cur())); S.fseeking = false; });
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && S.full) ACT.fullscreen(); });
+
+/* ---------- graphics panels ---------- */
+Object.assign(SHEETS, {
+  graphics: () => ({ title: t('Graphics'), body: `<p class="lead">${t('Animated cards for numbers, points and endings. Tap one to add it at {t}.', { t: fmt(S.t) })}</p>
+    <div class="cards">${Object.entries(GFX_TYPES).map(([k, g]) => `<button class="card gcard" data-act="gfxadd" data-v="${k}"><span class="gprev g-${k}"><i></i><i></i><i></i></span><span class="t">${t(g.n)}</span><span class="d">${t(g.d)}</span></button>`).join('')}</div>` }),
+  gfxedit: () => {
+    const x = selObj(), g = x?.gfx; if (!g) return { title: t('Graphic'), body: '' };
+    const inp = (k, v, label, type = 'text') => `<div class="field"><div class="lbl">${label}</div><input class="input" type="${type}" ${type === 'number' ? 'inputmode="decimal"' : ''} value="${esc(String(v ?? ''))}" data-k="${k}" dir="auto"></div>`;
+    let f = '';
+    if (g.type === 'stat') f = `${inp('g.value', g.value, t('Number'), 'number')}<div class="field"><div class="lbl">${t('After the number')}</div>${seg('gsuffix', g.suffix || '', [['%', '%'], ['', t('Nothing')], ['+', '+'], ['×', '×'], ['k', 'k'], ['M', 'M']])}</div>${inp('g.prefix', g.prefix, t('Before the number (e.g. $ or €)'))}${inp('g.label', g.label, t('Label'))}`;
+    else if (g.type === 'bars' || g.type === 'checklist') f = `${g.type === 'bars' ? inp('g.label', g.label, t('Title (optional)')) : ''}<div class="field"><div class="lbl">${g.type === 'bars' ? t('Bars') : t('Points')}</div>${g.items.map((it, i) => `<div class="row"><input class="input" style="flex:2" value="${esc(it.l || '')}" data-k="g.il" data-i="${i}" dir="auto" aria-label="${t('Label')}">${g.type === 'bars' ? `<input class="input" style="flex:1" type="number" inputmode="decimal" value="${it.v}" data-k="g.iv" data-i="${i}" aria-label="${t('Value')}">` : ''}<button class="icon-btn" data-act="gitemdel" data-i="${i}" aria-label="${t('Remove')}">${icon('trash', 's')}</button></div>`).join('')}
+      ${g.items.length < (g.type === 'bars' ? 5 : 6) ? `<button class="btn sm" data-act="gitemadd">${icon('plus', 's')}${t('Add')}</button>` : ''}</div>${g.type === 'bars' ? `<div class="field"><div class="lbl">${t('After each number')}</div>${seg('gsuffix', g.suffix || '', [['%', '%'], ['', t('Nothing')], ['k', 'k'], ['M', 'M']])}</div>` : ''}`;
+    else if (g.type === 'step') f = `${inp('g.n', g.n, t('Number'), 'number')}${inp('g.text', x.text, t('Title'))}`;
+    else if (g.type === 'quote') f = `${inp('g.text', x.text, t('Sentence'))}${inp('g.label', g.label, t('Who said it (optional)'))}`;
+    else if (g.type === 'lower') f = `${inp('g.text', x.text, t('Name'))}${inp('g.label', g.label, t('Role or detail'))}`;
+    else if (g.type === 'cta') f = inp('g.text', x.text, t('Words'));
+    return { title: t(GFX_TYPES[g.type].n), body: `${f}
+      <div class="field"><div class="lbl">${t('Colour')}</div><div class="swatches">${['#3fd39a', '#e2b76a', '#ffd84d', '#5ee7ff', '#ff6b5a', '#ffffff'].map(c => `<button class="sw ${x.color === c ? 'on' : ''}" style="background:${c}" data-act="gcolor" data-v="${c}"></button>`).join('')}</div></div>
+      <div class="field"><div class="lbl">${t('Font')}</div><select class="select" data-k="g.font">${fontOptions(x.font)}</select></div>
+      ${range('g.size', x.size, 0.4, 2, 0.05, t('Size'), pct(x.size))}
+      <div class="field"><div class="lbl">${t('Show for')}</div>${seg('gdur', [2, 3, 4, 6].includes(x.dur) ? x.dur : '', [[2, t('2 sec')], [3, t('3 sec')], [4, t('4 sec')], [6, t('6 sec')]])}</div>` };
+  },
+});
+const gSet = (label, fn) => { const x = selObj(); if (!x?.gfx) return; commit(label); fn(x, x.gfx); changed(); };
+Object.assign(ACT, {
+  gfxadd: el => { const x = addGfx(el.dataset.v); S.sel = { k: 'text', id: x.id }; S.menu = null; changed(); openSheet('gfxedit'); seekOut(x.start + 0.8); },
+  gsuffix: el => gSet('Graphic', (x, g) => g.suffix = el.dataset.v),
+  gcolor: el => gSet('Graphic', x => x.color = el.dataset.v),
+  gdur: el => gSet('Graphic', x => x.dur = +el.dataset.v),
+  gitemadd: () => gSet('Graphic', (x, g) => g.items.push(g.type === 'bars' ? { l: t('New'), v: 50 } : { l: t('New point') })),
+  gitemdel: el => gSet('Graphic', (x, g) => { if (g.items.length > 1) g.items.splice(+el.dataset.i, 1); }),
+});
+document.addEventListener('input', e => {
+  const el = e.target, k = el.dataset?.k; if (!k || !k.startsWith('g.')) return;
+  const x = selObj(); if (!x?.gfx) return; const g = x.gfx, v = el.value;
+  const L = (fn, shown) => { live('Graphic', () => fn()); if (shown != null) showVal(k, shown); };
+  switch (k) {
+    case 'g.value': L(() => g.value = +v || 0); break;
+    case 'g.prefix': L(() => g.prefix = v); break;
+    case 'g.label': L(() => g.label = v); break;
+    case 'g.text': L(() => x.text = v); break;
+    case 'g.n': L(() => g.n = Math.max(0, Math.round(+v || 0))); break;
+    case 'g.il': L(() => g.items[+el.dataset.i].l = v); break;
+    case 'g.iv': L(() => g.items[+el.dataset.i].v = +v || 0); break;
+    case 'g.font': L(() => { x.font = v; ensureFont(v); }); break;
+    case 'g.size': L(() => x.size = +v, pct(+v)); break;
+  }
+});
+/* =====================================================================
+   GRAPHICS: animated info cards drawn on the video — a number that counts up (with a ring for
+   percentages), a bar chart, numbered step titles, a quote card, a lower third and a "follow" card.
+   They are layers like text (p.texts with style 'gfx'), so they move, animate and keyframe the same way.
+   ===================================================================== */
+const GFX_TYPES = {
+  stat: { n: 'Number', d: 'Counts up, with a ring for percentages' },
+  bars: { n: 'Bar chart', d: 'Up to 5 bars that grow in' },
+  step: { n: 'Step title', d: 'A numbered point, like “1. Intention”' },
+  quote: { n: 'Quote card', d: 'A sentence on a calm card' },
+  lower: { n: 'Lower third', d: 'Name and role at the bottom' },
+  cta: { n: 'Follow card', d: 'A clear ending: follow, share, visit' },
+  checklist: { n: 'Checklist', d: 'Points that tick one by one' },
+};
+function gfxDefaults(type) {
+  const ar = UI_LANG === 'ar';
+  switch (type) {
+    case 'stat': return { value: 75, prefix: '', suffix: '%', label: ar ? 'من الناس' : 'of people', dur: 3 };
+    case 'bars': return { items: [{ l: ar ? 'قبل' : 'Before', v: 30 }, { l: ar ? 'بعد' : 'After', v: 85 }], suffix: '%', label: '', dur: 4 };
+    case 'step': return { n: 1, text: ar ? 'النقطة الأولى' : 'First point', dur: 3 };
+    case 'quote': return { text: ar ? 'اكتب الجملة هنا' : 'Write the sentence here', label: '', dur: 4 };
+    case 'lower': return { text: ar ? 'الاسم' : 'Your name', label: ar ? 'الصفة' : 'Your role', dur: 4 };
+    case 'cta': return { text: ar ? 'تابعنا للمزيد' : 'Follow for more', label: '', dur: 3 };
+    case 'checklist': return { items: [{ l: ar ? 'النقطة الأولى' : 'First point' }, { l: ar ? 'النقطة الثانية' : 'Second point' }, { l: ar ? 'النقطة الثالثة' : 'Third point' }], dur: 5 };
+  }
+  return {};
+}
+function addGfx(type, o = {}, noCommit) {
+  const d = gfxDefaults(type);
+  const x = addText({ style: 'gfx', text: o.text ?? d.text ?? GFX_TYPES[type].n, start: o.start ?? S.t, dur: o.dur ?? d.dur, color: o.color || '#3fd39a', font: o.font || (UI_LANG === 'ar' ? 'Cairo' : 'Montserrat'), pos: type === 'lower' ? 'bottom' : type === 'step' ? 'top' : 'middle', anim: { ...defaultAnim(), out: 'fade', outD: 0.4 }, size: 1 }, noCommit);
+  x.gfx = { type, ...d, ...o.gfx }; delete x.gfx.dur; delete x.gfx.text; if (o.text == null && d.text) x.text = d.text;
+  if (type === 'lower') { x.x = 0.3; x.y = 0.8; } if (type === 'step') { x.x = 0.5; x.y = 0.14; }
+  return x;
+}
+const easeOutC = x => 1 - Math.pow(1 - clamp(x, 0, 1), 3);
+const easeOutBack = x => { x = clamp(x, 0, 1); const c = 1.5; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+function numFmt(v, dec) { const s = v.toFixed(dec); return UI_LANG === 'ar' ? s : s.replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+/* draws one graphic; place(w, h) applies position, animation and keyframes and returns the centre */
+function drawGfx(ctx, W, H, tx, tOut, place, hits) {
+  const g = tx.gfx || {}, base = Math.min(W, H) * tx.size, u = tOut - tx.start, acc = tx.color || '#3fd39a';
+  const f = tx.font || 'Montserrat', fw = fontWeight(f), FS = (px, wt = fw) => `${wt} ${px}px ${fontStack(f)}`;
+  const rtl = isRtl(tx.text || g.label || ''); ctx.direction = rtl ? 'rtl' : 'ltr';
+  const panel = (x, y, w, h, r) => { ctx.save(); ctx.fillStyle = 'rgba(12,12,14,.78)'; roundRect(ctx, x, y, w, h, r); ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,.08)'; ctx.lineWidth = Math.max(1, base * 0.002); ctx.stroke(); ctx.restore(); };
+  let box = null;
+  if (g.type === 'stat') {
+    const k = easeOutC(u / 1.1), val = (+g.value || 0) * k, dec = String(g.value).includes('.') ? 1 : 0, pctMode = g.suffix === '%';
+    const npx = base * 0.12, lpx = base * 0.04, txt = `${g.prefix || ''}${numFmt(val, dec)}${g.suffix || ''}`;
+    ctx.font = FS(npx, 800); const nw = ctx.measureText(`${g.prefix || ''}${numFmt(+g.value || 0, dec)}${g.suffix || ''}`).width;
+    ctx.font = FS(lpx, 500); const lw = g.label ? ctx.measureText(g.label).width : 0;
+    const ring = pctMode ? npx * 1.25 : 0, pad = base * 0.04, w = Math.max(nw, lw) + pad * 2 + (ring ? ring + pad : 0), h = Math.max(ring, npx + (g.label ? lpx * 1.6 : 0)) + pad * 2;
+    const [cx, cy] = place(w, h), x0 = cx - w / 2, y0 = cy - h / 2; panel(x0, y0, w, h, base * 0.035);
+    let tx0 = x0 + pad;
+    if (ring) {
+      const rcx = x0 + pad + ring / 2, rcy = cy, rr = ring / 2 - base * 0.01; ctx.lineCap = 'round';
+      ctx.strokeStyle = 'rgba(255,255,255,.14)'; ctx.lineWidth = base * 0.016; ctx.beginPath(); ctx.arc(rcx, rcy, rr, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = acc; ctx.beginPath(); ctx.arc(rcx, rcy, rr, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * clamp(val / 100, 0, 1)); ctx.stroke();
+      tx0 += ring + pad;
+    }
+    ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; ctx.direction = 'ltr';
+    const ny = g.label ? y0 + pad + npx * 0.55 : cy;
+    ctx.font = FS(npx, 800); ctx.fillStyle = '#fff'; ctx.fillText(txt, tx0, ny);
+    if (g.label) { ctx.font = FS(lpx, 500); ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.globalAlpha *= clamp((u - 0.3) / 0.5, 0, 1); ctx.direction = isRtl(g.label) ? 'rtl' : 'ltr'; ctx.textAlign = isRtl(g.label) ? 'right' : 'left'; ctx.fillText(g.label, isRtl(g.label) ? tx0 + Math.max(nw, lw) : tx0, ny + npx * 0.55 + lpx * 0.8); }
+    box = [x0, y0, w, h];
+  } else if (g.type === 'bars') {
+    const items = (g.items || []).slice(0, 5), n = Math.max(1, items.length), max = Math.max(1, ...items.map(i => +i.v || 0));
+    const bw = base * 0.11, gap = base * 0.05, chartH = base * 0.32, lpx = base * 0.034, pad = base * 0.045, titlePx = g.label ? base * 0.042 : 0;
+    const w = n * bw + (n - 1) * gap + pad * 2, h = chartH + lpx * 3.2 + pad * 2 + (titlePx ? titlePx * 1.6 : 0);
+    const [cx, cy] = place(w, h), x0 = cx - w / 2, y0 = cy - h / 2; panel(x0, y0, w, h, base * 0.035);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    if (g.label) { ctx.font = FS(titlePx, 700); ctx.fillStyle = '#fff'; ctx.fillText(g.label, cx, y0 + pad + titlePx * 0.5); }
+    const yb = y0 + pad + (titlePx ? titlePx * 1.6 : 0) + lpx * 1.4 + chartH;
+    items.forEach((it, i) => {
+      const k = easeOutBack((u - 0.15 - i * 0.18) / 0.8), v = (+it.v || 0) * clamp(k, 0, 1.05), bh = chartH * (v / max), x = x0 + pad + i * (bw + gap);
+      ctx.fillStyle = i === items.length - 1 ? acc : 'rgba(255,255,255,.35)'; roundRect(ctx, x, yb - Math.max(bh, 1), bw, Math.max(bh, 1), bw * 0.18); ctx.fill();
+      ctx.font = FS(lpx, 800); ctx.fillStyle = '#fff'; ctx.globalAlpha *= 1; ctx.fillText(`${numFmt(Math.min(v, +it.v || 0), String(it.v).includes('.') ? 1 : 0)}${g.suffix || ''}`, x + bw / 2, yb - bh - lpx * 0.8);
+      ctx.font = FS(lpx, 500); ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillText(String(it.l || ''), x + bw / 2, yb + lpx * 0.9, bw + gap * 0.9);
+    });
+    box = [x0, y0, w, h];
+  } else if (g.type === 'step') {
+    const px = base * 0.06, d = px * 1.7; ctx.font = FS(px, 800); const tw = ctx.measureText(tx.text || '').width;
+    const pad = px * 0.5, w = d + pad + tw + pad * 1.6, h = d + pad * 0.6;
+    const [cx, cy] = place(w, h), x0 = cx - w / 2, y0 = cy - h / 2, k = easeOutC(u / 0.6);
+    // the pill wipes open behind the number
+    ctx.save(); ctx.beginPath(); ctx.rect(rtl ? x0 + w - w * k : x0, y0 - 2, w * k, h + 4); ctx.clip(); panel(x0, y0, w, h, h / 2);
+    ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.textAlign = rtl ? 'right' : 'left'; ctx.fillText(tx.text || '', rtl ? x0 + w - d - pad * 1.4 : x0 + d + pad * 1.4, cy); ctx.restore();
+    const bx = rtl ? x0 + w - h / 2 : x0 + h / 2, sc = easeOutBack(u / 0.45);
+    ctx.save(); ctx.translate(bx, cy); ctx.scale(sc, sc); ctx.fillStyle = acc; ctx.beginPath(); ctx.arc(0, 0, d / 2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#0b0b0c'; ctx.font = FS(px, 800); ctx.textAlign = 'center'; ctx.direction = 'ltr'; ctx.fillText(String(g.n ?? 1), 0, px * 0.04); ctx.restore();
+    box = [x0, y0, w, h];
+  } else if (g.type === 'quote' || g.type === 'cta' || g.type === 'lower') {
+    const big = g.type === 'quote' ? base * 0.05 : g.type === 'cta' ? base * 0.055 : base * 0.05, small = base * 0.034;
+    ctx.font = FS(big, g.type === 'quote' ? 600 : 800);
+    const lines = g.type === 'quote' ? wrapLines(ctx, (tx.text || '').split(/\s+/).filter(Boolean).map(w => ({ w })), W * 0.7).map(l => l.map(x => x.w).join(' ')) : [tx.text || ''];
+    const lw = Math.max(...lines.map(l => ctx.measureText(l).width)); ctx.font = FS(small, 500); const sw = g.label ? ctx.measureText(g.label).width : 0;
+    const pad = base * 0.04, lh = big * 1.3, bar = base * 0.012, icon = g.type === 'cta' ? big * 1.2 : 0;
+    const w = Math.max(lw, sw) + pad * 2 + bar + icon + (icon ? pad * 0.6 : 0), h = lines.length * lh + (g.label ? small * 1.8 : 0) + pad * 1.4;
+    const [cx, cy] = place(w, h), x0 = cx - w / 2, y0 = cy - h / 2, k = easeOutC(u / 0.55);
+    ctx.save();
+    if (g.type === 'lower') { ctx.beginPath(); ctx.rect(rtl ? x0 + w * (1 - k) : x0, y0 - 2, w * k + 2, h + 4); ctx.clip(); }
+    panel(x0, y0, w, h, g.type === 'cta' ? h / 2 : base * 0.03);
+    ctx.fillStyle = acc; if (g.type !== 'cta') { roundRect(ctx, rtl ? x0 + w - bar - pad * 0.5 : x0 + pad * 0.5, y0 + pad * 0.6, bar, h - pad * 1.2, bar / 2); ctx.fill(); }
+    let x = rtl ? x0 + w - pad - bar : x0 + pad + bar; ctx.textBaseline = 'middle'; ctx.textAlign = rtl ? 'right' : 'left';
+    if (icon) {
+      // a small arrow in a circle, pulsing gently
+      const ix = rtl ? x0 + w - pad - icon / 2 : x0 + pad + icon / 2, pul = 1 + 0.06 * Math.sin(u * 5);
+      ctx.save(); ctx.translate(ix, cy); ctx.scale(pul, pul); ctx.beginPath(); ctx.arc(0, 0, icon / 2, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#0b0b0c'; ctx.lineWidth = icon * 0.1; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); const s = icon * 0.18, dir = rtl ? -1 : 1; ctx.moveTo(-s * dir, -s * 1.2); ctx.lineTo(s * dir, 0); ctx.lineTo(-s * dir, s * 1.2); ctx.stroke(); ctx.restore();
+      x = rtl ? x0 + w - pad - icon - pad * 0.6 : x0 + pad + icon + pad * 0.6;
+    }
+    let y = y0 + pad * 0.7 + lh / 2; ctx.fillStyle = '#fff'; ctx.font = FS(big, g.type === 'quote' ? 600 : 800);
+    for (const l of lines) { ctx.fillText(l, x, y); y += lh; }
+    if (g.label) { ctx.font = FS(small, 500); ctx.fillStyle = 'rgba(255,255,255,.72)'; ctx.globalAlpha *= clamp((u - 0.25) / 0.4, 0, 1); ctx.fillText(g.label, x, y - lh / 2 + small * 1.1); }
+    ctx.restore(); box = [x0, y0, w, h];
+  } else if (g.type === 'checklist') {
+    const items = (g.items || []).slice(0, 6), px = base * 0.045, lh = px * 1.9, pad = base * 0.045, ck = px * 1.1;
+    ctx.font = FS(px, 700); const lw = Math.max(1, ...items.map(i => ctx.measureText(String(i.l || '')).width));
+    const w = lw + ck + pad * 2.6, h = items.length * lh + pad * 1.2;
+    const [cx, cy] = place(w, h), x0 = cx - w / 2, y0 = cy - h / 2; panel(x0, y0, w, h, base * 0.035);
+    const each = Math.max(0.5, (tx.dur - 0.8) / Math.max(1, items.length));
+    items.forEach((it, i) => {
+      const y = y0 + pad * 0.6 + lh * (i + 0.5), k = easeOutC((u - 0.2 - i * each) / 0.4), bx = rtl ? x0 + w - pad - ck / 2 : x0 + pad + ck / 2;
+      ctx.save(); ctx.globalAlpha *= 0.35 + 0.65 * k;
+      ctx.strokeStyle = k > 0.01 ? acc : 'rgba(255,255,255,.4)'; ctx.lineWidth = px * 0.12; ctx.beginPath(); ctx.arc(bx, y, ck / 2, 0, Math.PI * 2); ctx.stroke();
+      if (k > 0) { ctx.fillStyle = acc; ctx.beginPath(); ctx.arc(bx, y, ck / 2 * k, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#0b0b0c'; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(bx - ck * 0.22, y); ctx.lineTo(bx - ck * 0.05, y + ck * 0.18); ctx.lineTo(bx + ck * 0.25, y - ck * 0.18); ctx.stroke(); }
+      ctx.fillStyle = '#fff'; ctx.font = FS(px, 700); ctx.textBaseline = 'middle'; ctx.direction = isRtl(it.l || '') ? 'rtl' : 'ltr'; ctx.textAlign = rtl ? 'right' : 'left'; ctx.fillText(String(it.l || ''), rtl ? bx - ck / 2 - pad * 0.6 : bx + ck / 2 + pad * 0.6, y);
+      ctx.restore();
+    });
+    box = [x0, y0, w, h];
+  }
+  if (box) hits?.push({ kind: 'text', id: tx.id, x: box[0], y: box[1], w: box[2], h: box[3] });
+}
+/* =====================================================================
+   AUTO-EDIT STUDIO — works like handing your raw video to a professional editor.
+   1. A short brief: what it is, where it goes, how long, what feel.
+   2. The editor "watches" the video (its words and its sound) and comes back with ideas, each with
+      the reason behind it: a cold open with your strongest line, cleaner speech, captions, animated
+      graphics for numbers and lists, punch-in zooms, smooth section changes, an ending card…
+   3. You keep the ideas you like; nothing changes until you approve. Everything can be undone.
+   It can also find the best short clips in a long video (like a clipper app) and make each one a project.
+   No music is ever added; the only sounds are simple non-musical effects, and only if you keep them.
+   ===================================================================== */
+const STUDIO_KINDS = {
+  reminder: { n: 'Reminder or lecture', d: 'Calm, clear, every sentence whole', pace: 'calm', plat: 'keep', len: 'all' },
+  reel: { n: 'Short reel', d: 'Hook, captions, fast pace', pace: 'energetic', plat: 'vertical', len: '60' },
+  youtube: { n: 'YouTube video', d: 'Landscape, clean and steady', pace: 'balanced', plat: 'landscape', len: 'all' },
+  podcast: { n: 'Podcast clip', d: 'Conversation, big captions', pace: 'balanced', plat: 'vertical', len: '60' },
+  tutorial: { n: 'Tutorial or how-to', d: 'Steps and points made clear', pace: 'balanced', plat: 'keep', len: 'all' },
+  promo: { n: 'Promo or business', d: 'Punchy, numbers stand out', pace: 'energetic', plat: 'square', len: '30' },
+  vlog: { n: 'Vlog or story', d: 'Natural, smooth, personal', pace: 'balanced', plat: 'vertical', len: 'all' },
+  clips: { n: 'Find the best clips', d: 'Short clips from a long video', pace: 'energetic', plat: 'vertical', len: '60' },
+};
+const STUDIO_PLATS = { vertical: ['Reels · TikTok · Shorts', '9:16'], status: ['WhatsApp status', '9:16'], feed: ['Instagram feed', '4:5'], square: ['Square post', '1:1'], landscape: ['YouTube · TV', '16:9'], keep: ['Keep as filmed', 'orig'] };
+const STUDIO_LENS = { all: 'Keep it all', '90': 'About 90 sec', '60': 'About 60 sec', '30': 'About 30 sec', '15': 'About 15 sec' };
+const STUDIO_PACES = { calm: 'Calm', balanced: 'Balanced', energetic: 'Energetic' };
+
+/* ---------- reading the video ---------- */
+const AR_DIGITS = s => s.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+const LIST_RX = /^(?:and |so |now |okay |ok )?(first(?:ly)?|second(?:ly)?|third(?:ly)?|fourth(?:ly)?|fifth(?:ly)?|number (?:one|two|three|four|five|\d)|step (?:one|two|three|four|five|\d)|the first (?:one|thing|point)|the second (?:one|thing|point)|the third (?:one|thing|point)|next|finally|lastly|و?أولا|و?أولاً|و?ثانيا|و?ثانياً|و?ثالثا|و?ثالثاً|و?رابعا|و?رابعاً|و?خامسا|و?خامساً|و?أخيرا|و?أخيراً|الأمر الأول|الأمر الثاني|الأمر الثالث|النقطة الأولى|النقطة الثانية|النقطة الثالثة)\b[,،:]?\s*/i;
+const Q_RX = /[?؟]\s*$|^(why|how|what|did you know|have you|do you|imagine|what if|هل|لماذا|كيف|ماذا|ما هو|ما هي|تخيل)\b/i;
+function studioRead(p) {
+  const ss = sentences(p).filter(x => present(p, x.s, x.e) > 0.3), a = S.audio, span = a && !a.none ? Math.max(1, a.loud - a.floor) : 1;
+  const out = ss.map((x, i) => {
+    const text = x.text.trim(), words = text.split(/\s+/).filter(Boolean), en = a && !a.none ? clamp((loudness(x.s, x.e) - a.floor) / span, 0, 1) : 0.5;
+    const num = AR_DIGITS(text).match(/(\d+(?:[.,]\d+)?)\s*(%|٪|percent|per cent|في المئة|بالمئة|بالمائة|في المائة)?/i);
+    const list = text.match(LIST_RX);
+    return { i, s: x.s, e: x.e, text, words: words.length, en, q: Q_RX.test(text), num: num ? { v: +num[1].replace(',', '.'), pct: !!num[2], at: num.index, raw: num[0] } : null, list: list ? list[1] : null, done: /[.!?؟。]$/.test(text) };
+  });
+  return out;
+}
+/* how strong a sentence is as a first line or a highlight */
+function lineScore(x) { return x.en * 2 + (x.q ? 1.6 : 0) + (x.num ? 1.2 : 0) + (x.words >= 5 && x.words <= 16 ? 1 : x.words > 26 ? -1 : 0) + (x.done ? 0.4 : -0.3) + (x.list ? 0.3 : 0); }
+const snippet = (s, n = 8) => { const w = s.split(/\s+/).filter(Boolean); return w.slice(0, n).join(' ') + (w.length > n ? '…' : ''); };
+
+/* ---------- the ideas ---------- */
+function studioIdeas(p, b) {
+  const kind = STUDIO_KINDS[b.kind], ideas = [], L = studioRead(p), total = outDur(p), ar = /^(ar|ur|fa)$/.test(p.capLang) || L.some(x => ARABIC_SCRIPT.test(x.text));
+  const energetic = b.pace === 'energetic', calm = b.pace === 'calm', short = ['15', '30', '60', '90'].includes(b.len) || ['vertical', 'status'].includes(b.plat);
+  const at = s => fmt(srcToOut(p, s) ?? 0);
+  // 1. cleaner speech
+  const cl = cleanupPlan(p, calm ? 'gentle' : energetic ? 'strong' : 'normal');
+  if (cl) {
+    const list = [...cl.silences, ...(cl.exact ? [...cl.fillers, ...cl.stumbles] : [])].filter(x => x.on !== false);
+    if (list.length) ideas.push({ key: 'clean', on: true, icon: 'cut', list, title: t('Tighten the speech'), why: t('{a} pauses{b}. {s}s shorter, and every sentence stays whole.', { a: cl.silences.length, b: cl.exact ? ' · ' + t('{n} filler sounds and stumbles', { n: cl.fillers.length + cl.stumbles.length }) : '', s: list.reduce((q, x) => q + (x.save || 0), 0).toFixed(1) }) });
+  }
+  const reps = p.captions.length ? detectRepeats(p) : [];
+  if (reps.length) ideas.push({ key: 'repeats', on: true, icon: 'cut', list: reps, title: t('Drop repeated takes: {n}', { n: reps.length }), why: t('You said some lines twice. I keep the later, cleaner take.') });
+  // 2. length
+  const target = +b.len || 0, after = total - (ideas.find(i => i.key === 'clean')?.list.reduce((q, x) => q + (x.save || 0), 0) || 0);
+  if (target && L.length > 2 && after > target * 1.2) {
+    const ranked = [...L].sort((x, y) => lineScore(y) - lineScore(x)), keep = new Set([L[0].i]); let sum = L[0].e - L[0].s;
+    for (const x of ranked) { if (keep.has(x.i)) continue; const d = x.e - x.s; if (sum + d > target * 1.05) continue; keep.add(x.i); sum += d; }
+    const drop = L.filter(x => !keep.has(x.i));
+    if (drop.length) ideas.push({ key: 'length', on: true, icon: 'speed', list: drop.map(x => ({ s: x.s, e: x.e, text: x.text, save: x.e - x.s })), title: t('Shorten to about {n} seconds', { n: target }), why: t('I keep your strongest {k} of {n} sentences, in their order, and leave out the rest. Check what goes.', { k: keep.size, n: L.length }) });
+  }
+  // 3. a cold open: the strongest line first
+  const hook = [...L].filter(x => x.s > 3 && x.words >= 4 && x.words <= 22).sort((x, y) => lineScore(y) - lineScore(x))[0];
+  if (hook && L.length > 3 && b.kind !== 'reminder') ideas.push({ key: 'hook', on: short || energetic, icon: 'play', s: hook.s, e: hook.e, text: snippet(hook.text, 9), title: t('Open with your strongest line'), why: t('“{x}” (at {t}). Viewers decide in the first two seconds; this plays first as a teaser, then the video starts.', { x: snippet(hook.text, 12), t: at(hook.s) }) });
+  // 4. captions
+  const capPreset = energetic ? 'w-color' : calm ? (ar ? 'box' : 'clean') : b.kind === 'podcast' ? 'w-one' : 'w-pill';
+  if (!p.captions.length) ideas.push({ key: 'captions', on: false, na: true, icon: 'cc', title: t('Captions'), why: t('The words couldn’t be written, so captions and word-based ideas are off.') });
+  else ideas.push({ key: 'captions', on: true, icon: 'cc', preset: capPreset, pos: b.plat === 'landscape' || b.plat === 'keep' ? 'bottom' : 'middle', title: t('Captions: {x}', { x: t(CAP_PRESETS[capPreset].name) }), why: energetic ? t('Word-by-word highlights keep eyes on the screen, even with the sound off.') : t('Clear captions: most people watch without sound.') });
+  // 5. graphics for numbers and lists
+  const nums = L.filter(x => x.num && !x.list && (x.num.pct || x.num.v >= 3) && x.num.v < 1e9).slice(0, 4);
+  if (nums.length) ideas.push({ key: 'stats', on: true, icon: 'sparkle', list: nums, title: t('Animated numbers: {n}', { n: nums.length }), why: nums.map(x => `“${x.num.raw.trim()}” ${t('at {t}', { t: at(x.s) })}`).join(' · ') + '. ' + t('A number that counts up on screen sticks in the memory.') });
+  const steps = L.filter(x => x.list);
+  if (steps.length >= 2) ideas.push({ key: 'steps', on: true, icon: 'type', list: steps.slice(0, 8), title: t('Numbered titles for your {n} points', { n: Math.min(8, steps.length) }), why: t('You go through points (“{x}”…). A numbered title appears as each one starts.', { x: steps[0].list }) });
+  if (steps.length >= 3 && b.kind !== 'reel') ideas.push({ key: 'recap', on: calm || b.kind === 'tutorial', icon: 'check', list: steps.slice(0, 6), title: t('A checklist of the points at the end'), why: t('Sums up what was said, so it’s easy to remember and share.') });
+  // 6. movement
+  const moments = detectMoments(p, energetic ? 8 : calm ? 2 : 5);
+  if (moments.length && !calm) ideas.push({ key: 'zooms', on: true, icon: 'zoom', list: moments, scale: energetic ? 1.14 : 1.08, title: t('Punch-in zooms on emphasis: {n}', { n: moments.length }), why: t('Smooth zoom-ins where your voice rises, so the important lines land.') });
+  if (!calm) ideas.push({ key: 'cutzoom', on: true, icon: 'film', title: t('Hide the jump cuts'), why: t('Each cut changes the framing slightly, the way editors hide cuts in talking videos.') });
+  // 7. section changes: smooth transitions, with a soft whoosh when energetic
+  const secs = (steps.length >= 2 ? steps.slice(1) : L.filter((x, i) => i > 0 && x.s - L[i - 1].e > 1.4)).slice(0, 8);
+  if (secs.length) ideas.push({ key: 'sections', on: true, icon: 'trans', list: secs, sfx: energetic, title: t('Smooth section changes: {n}', { n: secs.length }), why: energetic ? t('A quick zoom transition and a soft whoosh (no music) mark each new part.') : t('A gentle transition marks each new part.') });
+  // 8. opening title (when there is no teaser)
+  if (!p.texts.some(x => x.start < 1)) ideas.push({ key: 'title', on: !hook || !short, icon: 'type', text: b.kind === 'reminder' || b.kind === 'youtube' ? p.name : snippet(L[0]?.text || p.name, 7), title: t('An opening title'), why: t('Tells viewers straight away what this is about. Edit the words below.') });
+  // 9. the look and the format
+  const shape = STUDIO_PLATS[b.plat]?.[1];
+  if (shape && shape !== 'orig' && shape !== p.aspect) ideas.push({ key: 'shape', on: true, icon: 'frame', aspect: shape, fill: b.kind === 'podcast' || (p.vw > p.vh * 1.2 && ['9:16', '4:5'].includes(shape)) ? 'blur' : 'crop', title: t('Format: {x}', { x: shape }), why: t('Made for {x}.', { x: t(STUDIO_PLATS[b.plat][0]) }) });
+  const look = calm ? 'natural' : energetic ? 'vivid' : 'natural';
+  if (p.fx.look === 'none') ideas.push({ key: 'look', on: true, icon: 'filter', look, title: t('Colour: {x}', { x: t(LOOKS[look].name) }), why: t('A light colour correction: clearer skin tones and contrast, nothing heavy.') });
+  // 10. sound and finish
+  if (!p.audio.voice) ideas.push({ key: 'voice', on: true, icon: 'volume', title: t('Clearer voice'), why: t('Evens out the voice and cuts low hum, like a better microphone.') });
+  if (short && !p.fx.progress) ideas.push({ key: 'progress', on: energetic, icon: 'film', title: t('Progress bar'), why: t('A thin bar shows how much is left, which keeps people watching to the end.') });
+  if (!short && !p.fx.fadeIO) ideas.push({ key: 'fade', on: true, icon: 'film', title: t('Fade in and out'), why: t('A soft start and a soft ending.') });
+  ideas.push({ key: 'cta', on: b.kind !== 'reminder', icon: 'sparkle', text: ar ? 'تابعنا للمزيد' : t('Follow for more'), title: t('An ending card'), why: t('A clear last line tells people what to do next. Edit the words below.') });
+  // 11. privacy, the app's own principles: offered, never done silently
+  if (!p.tracks.some(x => x.kind !== 'person')) ideas.push({ key: 'faces', on: false, link: 'faces', icon: 'shield', title: t('Check for faces to blur'), why: t('Opens Face blur after the edit, to hide anyone who shouldn’t be shown.') });
+  if (!p.tracks.some(x => x.kind === 'person')) ideas.push({ key: 'people', on: false, link: 'people', icon: 'cover', title: t('Check for people to cover (Modesty)'), why: t('Opens Modesty after the edit, to cover anyone not dressed modestly.') });
+  return { ideas, read: L, ar };
+}
+/* one line that sums up what the editor saw */
+function studioSummary(p, R) {
+  const L = R.read, nums = L.filter(x => x.num).length, pts = L.filter(x => x.list).length, qs = L.filter(x => x.q).length;
+  const parts = [t('I watched your {d} video', { d: fmtS(outDur(p)) })];
+  if (L.length) parts.push(t('{n} sentences', { n: L.length }));
+  if (pts >= 2) parts.push(t('{n} points', { n: pts }));
+  if (nums) parts.push(t('{n} numbers', { n: nums }));
+  if (qs) parts.push(t('{n} questions', { n: qs }));
+  return parts.join(' · ') + '. ' + t('Here is what I suggest. Keep what you like.');
+}
+
+/* ---------- doing it ---------- */
+function studioApply() {
+  const d = S.sheetData, p = cur(), ideas = d.ideas.filter(i => i.on && !i.na && !i.link); if (!ideas.length && !d.ideas.some(i => i.on && i.link)) return;
+  pause(); commit('Auto-edit'); const before = outDur(p), done = [], has = k => ideas.find(i => i.key === k);
+  const ar = d.ar, gfxFont = ar ? 'Cairo' : 'Montserrat';
+  // cuts first (they are in the video's own time)
+  const ranges = [];
+  for (const k of ['clean', 'repeats', 'length']) { const it = has(k); if (it) ranges.push(...it.list.filter(x => x.on !== false)); }
+  if (ranges.length) { removeRanges(p, mergeCuts(ranges)); p.autocutDone = true; done.push(t('Tightened: {s}s shorter', { s: (before - outDur(p)).toFixed(1) })); }
+  // where things land on the new timeline; the teaser (if any) adds its length in front
+  const hk = has('hook'), hookLen = hk ? Math.max(0.5, hk.e - hk.s) : 0, OUT = s => { const o = srcToOut(p, s); return o == null ? null : o + hookLen; };
+  if (has('captions')) { const it = has('captions'); p.cap.on = true; p.capAuto = false; applyPreset(p, it.preset, it.pos); done.push(t('Captions: {x}', { x: t(CAP_PRESETS[it.preset].name) })); }
+  if (has('stats')) for (const x of has('stats').list) { const o = OUT(x.s); if (o == null) continue; const words = x.text.slice(x.num.at + x.num.raw.length).trim().split(/\s+/).slice(0, 4).join(' '); const g = addGfx('stat', { start: o + 0.2, dur: 3, font: gfxFont, gfx: { value: x.num.v, suffix: x.num.pct ? '%' : '', prefix: '', label: words.replace(/[.,!?؟،]+$/, '') } }, true); g.x = 0.5; g.y = 0.3; if (d.brief.pace === 'energetic') p.sounds.push({ id: uid('s'), kind: 'sfx', sfx: 'pop', name: t('Pop'), start: +(o + 0.2).toFixed(2), dur: 0.25, vol: 0.6, fadeIn: 0, fadeOut: 0, voice: 'none' }); }
+  if (has('stats')) done.push(t('Animated numbers: {n}', { n: has('stats').list.length }));
+  if (has('steps')) { let n = 0; const sl = has('steps').list; sl.forEach((x, si) => { const o = OUT(x.s); if (o == null) return; const nx = sl[si + 1] && OUT(sl[si + 1].s), dur = Math.max(1.2, Math.min(2.8, nx != null ? nx - o - 0.15 : 2.8)); const title = snippet(x.text.replace(LIST_RX, ''), 5).replace(/[.,!?؟،…]+$/, '') || x.list; addGfx('step', { start: o, dur, font: gfxFont, text: title, gfx: { n: ++n } }, true); }); done.push(t('Numbered titles: {n}', { n })); }
+  if (has('recap')) { const items = has('recap').list.map(x => ({ l: snippet(x.text.replace(LIST_RX, ''), 4).replace(/[.,!?؟،…]+$/, '') })); const end = outDur(p) + hookLen; const g = addGfx('checklist', { start: Math.max(0, end - Math.min(6, end * 0.3) - (has('cta') ? 3 : 0)), dur: Math.min(6, end * 0.3), font: gfxFont, gfx: { items } }, true); g.x = 0.5; g.y = 0.45; done.push(t('A checklist at the end')); }
+  if (has('zooms')) { const it = has('zooms'); for (const x of it.list) if (!p.zooms.some(z => z.s < x.e && z.e > x.s)) p.zooms.push({ id: uid('z'), s: x.s + 0.15, e: x.e, scale: it.scale }); done.push(t('Punch-in zooms: {n}', { n: it.list.length })); }
+  if (has('cutzoom')) p.fx.cutZoom = true;
+  if (has('sections')) {
+    // a split at each new part, with a transition (a plain split keeps playing smoothly)
+    const it = has('sections'); let n = 0;
+    for (const x of it.list) {
+      const i = p.segs.findIndex(g => !g.freeze && x.s >= g.in - 0.05 && x.s < g.out); if (i < 0) continue; const g = p.segs[i];
+      let at = i; if (x.s - g.in > 0.15 && g.out - x.s > 0.15) { const b2 = { ...clone(g), id: uid('g'), in: x.s, keys: [], anim: defaultAnim() }; g.out = x.s; p.segs.splice(i + 1, 0, b2); at = i + 1; }
+      if (at > 0) { p.segs[at].tr = it.sfx ? 'zoom' : 'crossfade'; n++; const o = OUT(x.s); if (it.sfx && o != null) p.sounds.push({ id: uid('s'), kind: 'sfx', sfx: 'whoosh', name: t('Whoosh'), start: +Math.max(0, o - 0.35).toFixed(2), dur: 1, vol: 0.45, fadeIn: 0, fadeOut: 0.2, voice: 'none' }); }
+    }
+    if (n) done.push(t('Smooth section changes: {n}', { n }));
+  }
+  if (has('title')) { const it = has('title'), x = addText({ style: 'title', text: it.text, pos: 'middle', start: hookLen, dur: 2.6, font: ar ? 'Cairo' : 'Montserrat', anim: { ...defaultAnim(), in: 'zoomin', out: 'fade' } }, true); Object.assign(x, clone(TEXT_LOOKS.plain.p)); ensureFont(x.font); done.push(t('Opening title')); }
+  if (has('cta')) { const end = outDur(p) + hookLen; addGfx('cta', { start: Math.max(0, end - 2.8), dur: 2.8, font: gfxFont, text: has('cta').text }, true); done.push(t('Ending card')); }
+  if (has('shape')) { const it = has('shape'); p.aspect = it.aspect; p.fill = it.fill; done.push(t('Format: {x}', { x: it.aspect })); }
+  if (has('look')) { p.fx.look = has('look').look; p.fx.lookAmt = 0.8; }
+  if (has('voice')) p.audio.voice = true;
+  if (has('progress')) p.fx.progress = true;
+  if (has('fade')) p.fx.fadeIO = true;
+  // the teaser goes in last, in front of everything
+  if (hk) {
+    const first = p.segs.find(g => !g.freeze && hk.s >= g.in - 0.05 && hk.s < g.out) || p.segs[0], c = segClip(p, first);
+    const tz = normPart({ in: Math.max(c.off, hk.s), out: Math.min(c.off + c.dur, hk.e), speed: 1, id: uid('g') });
+    p.segs.unshift(tz); if (p.segs[1]) p.segs[1].tr = 'flash';
+    const x = addText({ style: 'title', text: hk.text, pos: 'top', start: 0, dur: Math.min(hookLen, 3.5), font: ar ? 'Cairo' : 'Montserrat', anim: { ...defaultAnim(), in: 'slideD', out: 'fade' } }, true);
+    Object.assign(x, clone(TEXT_LOOKS.boxlight.p)); x.size = 0.8; x.y = 0.14; x.x = 0.5; ensureFont(x.font);
+    done.unshift(t('Teaser: your strongest line opens the video'));
+  }
+  p.autoEdited = true; S.sel = null; changed(); layoutFrame(); seekOut(0);
+  d.result = { done, links: d.ideas.filter(i => i.on && i.link).map(i => i.link) }; d.step = 'done'; renderSheet();
+}
+
+/* ---------- the clipper: the best short clips from a long video ---------- */
+function findClips(p, b) {
+  const L = studioRead(p), want = +b.len || 60, lo = Math.max(5, want * 0.5), hi = want * 1.25, cands = [];
+  for (let i = 0; i < L.length; i++) {
+    let dur = 0, sc = 0, j = i;
+    for (; j < L.length; j++) { dur = L[j].e - L[i].s; if (dur > hi) break; sc += lineScore(L[j]); if (dur >= lo && L[j].done) cands.push({ i, j, s: L[i].s, e: L[j].e, dur, score: sc / (j - i + 1) + lineScore(L[i]) * 0.8 + (L[i].q ? 1 : 0) }); }
+  }
+  cands.sort((x, y) => y.score - x.score);
+  const picked = []; for (const c of cands) { if (picked.some(q => c.s < q.e && c.e > q.s)) continue; picked.push(c); if (picked.length >= 5) break; }
+  const max = picked[0]?.score || 1;
+  return picked.sort((x, y) => x.s - y.s).map(c => ({ ...c, text: snippet(L[c.i].text, 10), rating: c.score / max > 0.85 ? t('Strong') : c.score / max > 0.65 ? t('Good') : t('Worth a look') }));
+}
+async function makeClipProject(c) {
+  const src = cur(), p = clone(src); p.id = uid('p'); p.name = `${t('Clip')} · ${c.text}`.slice(0, 60); p.created = p.updated = Date.now();
+  p.segs = p.segs.map(g => ({ ...g })); removeRanges(p, [{ s: -1, e: c.s - 0.05 }, { s: c.e + 0.25, e: 1e9 }]);
+  p.texts = []; p.overlays = []; p.sounds = []; p.effects = []; p.zooms = []; p.autoEdited = false;
+  p.captions = p.captions.filter(x => x.e > c.s && x.s < c.e + 0.3);
+  const media = {}; for (const cl of p.clips) media[cl.id] = { file: S.files[cl.id], url: S.urls[cl.id] };
+  S.projects.unshift(p); await DB.put(p);
+  // the clip opens with the studio ready to finish it as a short
+  await openProject(p, media);
+  S.sheet = 'autoedit'; S.sheetData = { step: 'brief', brief: { kind: 'reel', plat: 'vertical', len: 'all', pace: 'energetic', wish: '' }, fromClip: true }; renderSheet();
+  toast(t('Clip made as its own project. Your original is unchanged.'));
+}
+
+/* ---------- the panel ---------- */
+const chips = (act, curV, opts) => `<div class="chips">${opts.map(([v, l, d]) => `<button class="chip ${curV === v ? 'on' : ''}" data-act="${act}" data-v="${v}">${esc(l)}${d ? `<small>${esc(d)}</small>` : ''}</button>`).join('')}</div>`;
+SHEETS.autoedit = () => {
+  const d = S.sheetData, p = cur(); d.step ??= 'brief'; d.brief ??= { kind: null, plat: null, len: null, pace: null, wish: '' };
+  const b = d.brief;
+  if (d.step === 'busy') return { title: t('Auto-edit'), body: `<div class="studio-say">${icon('sparkle', 's')}<span>${esc(S.capJob?.text || d.busy || t('Watching your video…'))}</span></div>${S.capJob?.pct != null ? `<div class="bar"><i style="width:${Math.round(S.capJob.pct * 100)}%"></i></div>` : `<div class="bar"><i style="width:100%;opacity:.45"></i></div>`}<span class="hint">${t('Keep the app open. The first time, the speech program downloads.')}</span>` };
+  if (d.step === 'done') {
+    const r = d.result;
+    return { title: t('Your edit is ready'), body: `<div class="studio-say">${icon('check', 's')}<span>${t('Done. Press play to watch it. Everything is still editable on the timeline.')}</span></div>
+      <div class="list">${r.done.map(x => `<div class="li">${icon('check', 's')}<span class="grow"><span class="t">${esc(x)}</span></span></div>`).join('')}</div>
+      ${r.links.length ? `<div class="field"><div class="lbl">${t('Next')}</div><div class="row">${r.links.map(l => `<button class="btn" style="flex:1" data-act="sheet" data-v="${l}">${icon(l === 'faces' ? 'shield' : 'cover', 's')}${l === 'faces' ? t('Face blur') : t('Modesty')}</button>`).join('')}</div></div>` : ''}
+      <div class="row"><button class="btn" style="flex:1" data-act="stredo">${icon('undo', 's flip')}${t('Change the ideas')}</button><button class="btn primary" style="flex:1" data-act="close">${t('Looks good')}</button></div>` };
+  }
+  if (d.step === 'clips') {
+    return { title: t('The best clips'), body: `<div class="studio-say">${icon('sparkle', 's')}<span>${d.clips.length ? t('I found {n} moments that work on their own. Preview them, then make the ones you like.', { n: d.clips.length }) : t('I couldn’t find clear moments that work on their own. Try a longer target length.')}</span></div>
+      <div class="list">${d.clips.map((c, i) => `<div class="li clipc"><button class="go" data-act="stclipplay" data-i="${i}" aria-label="${t('Play')}">${icon('play', 's')}</button><span class="grow"><span class="t" dir="auto">“${esc(c.text)}”</span><br><span class="d">${esc(c.rating)} · ${fmtS(c.dur)} · ${t('from {t}', { t: fmt(srcToOut(p, c.s) ?? 0) })}</span></span><button class="btn sm primary" data-act="stclipmake" data-i="${i}">${t('Make clip')}</button></div>`).join('')}</div>
+      <button class="btn ghost block" data-act="stback">${t('Back')}</button>` };
+  }
+  if (d.step === 'ideas') {
+    const n = d.ideas.filter(i => i.on && !i.na).length;
+    return { title: t('My ideas for your video'), body: `<div class="studio-say">${icon('sparkle', 's')}<span>${esc(d.summary)}</span></div>
+      <div class="ideas">${d.ideas.map((it, i) => `<div class="idea ${it.on ? 'on' : ''} ${it.na ? 'na' : ''}">
+        <label class="ih"><input type="checkbox" data-act="stidea" data-i="${i}" ${it.on ? 'checked' : ''} ${it.na ? 'disabled' : ''}><span class="ic">${icon(it.icon || 'check', 's')}</span><span class="grow"><b>${esc(it.title)}</b><span class="why" dir="auto">${esc(it.why || '')}</span></span></label>
+        ${['title', 'cta', 'hook'].includes(it.key) && it.on ? `<input class="input" value="${esc(it.text)}" data-k="stideatext" data-i="${i}" dir="auto" aria-label="${t('Words')}">` : ''}
+        ${it.s != null && it.key === 'hook' ? `<button class="btn sm" data-act="preview" data-s="${it.s}">${icon('play', 's')}${t('Hear it')}</button>` : ''}
+        ${['clean', 'repeats', 'length'].includes(it.key) && it.on && it.list?.length ? `<details><summary>${t('Check each one ({n})', { n: it.list.length })}</summary>${it.list.map((x, k) => `<div class="sub"><input type="checkbox" data-act="stpart" data-i="${i}" data-k="${k}" ${x.on !== false ? 'checked' : ''}><span class="grow" dir="auto">${x.text ? esc(snippet(x.text, 10)) : t('Pause of {s}s', { s: (x.len || x.e - x.s).toFixed(1) })}</span><button class="go num" data-act="preview" data-s="${x.s}">${fmt(srcToOut(p, x.s) ?? 0)}</button></div>`).join('')}</details>` : ''}
+      </div>`).join('')}</div>
+      <button class="btn primary big block" data-act="stapply" ${n ? '' : 'disabled'}>${icon('magic', 's')}${t('Edit my video ({n} ideas)', { n })}</button>
+      <button class="btn ghost block" data-act="stback">${t('Change the brief')}</button>` };
+  }
+  // the brief
+  const kind = b.kind && STUDIO_KINDS[b.kind];
+  return { title: t('Auto-edit'), body: `<div class="studio-say">${icon('sparkle', 's')}<span>${d.fromClip ? t('This is your new clip. How should I finish it?') : t('I’m your editor. Tell me a little about this video, and I’ll watch it and suggest a plan. Nothing changes until you approve.')}</span></div>
+    <div class="field"><div class="lbl">${t('What is it?')}</div>${chips('stkind', b.kind, Object.entries(STUDIO_KINDS).map(([k, x]) => [k, t(x.n), t(x.d)]))}</div>
+    ${kind ? `<div class="field"><div class="lbl">${t('Where will it go?')}</div>${chips('stplat', b.plat, Object.entries(STUDIO_PLATS).map(([k, x]) => [k, t(x[0]), x[1] === 'orig' ? '' : x[1]]))}</div>
+    <div class="field"><div class="lbl">${b.kind === 'clips' ? t('How long should each clip be?') : t('How long should it be?')}</div>${chips('stlen', b.len, Object.entries(STUDIO_LENS).filter(([k]) => b.kind !== 'clips' || k !== 'all').map(([k, x]) => [k, t(x)]))}</div>
+    ${b.kind !== 'clips' ? `<div class="field"><div class="lbl">${t('What feel?')}</div>${chips('stpace', b.pace, Object.entries(STUDIO_PACES).map(([k, x]) => [k, t(x)]))}</div>` : ''}
+    <div class="field"><div class="lbl">${t('Anything else I should know? (optional)')}</div><input class="input" data-k="stwish" value="${esc(b.wish || '')}" placeholder="${t('e.g. it’s for my brother, keep it respectful')}" dir="auto"></div>
+    <button class="btn primary big block" data-act="stgo">${icon('sparkle', 's')}${b.kind === 'clips' ? t('Find the best clips') : t('Watch my video and suggest ideas')}</button>` : ''}
+    ${!S.audio ? `<span class="hint">${t('Still listening to the sound… one moment.')}</span>` : ''}` };
+};
+async function studioGo() {
+  const d = S.sheetData, b = d.brief, p = cur();
+  if (!S.audio) { toast(t('Still listening to the sound. One moment.')); return; }
+  const w = (b.wish || '').toLowerCase(); if (/calm|هادئ|هادي|respectful|محترم/.test(w) && b.pace === 'energetic') b.pace = 'balanced';
+  d.step = 'busy'; d.busy = t('Watching your video…'); renderSheet();
+  // the words are needed for good ideas: written once (hidden), and they also become the captions
+  if (!p.captions.length && !inClaude() && (S.audioBuf || needLiveSound())) {
+    if (needLiveSound()) { const pr = startLiveCapture(f => { d.busy = t('Listening to the video’s sound… {n}%', { n: Math.round(f * 100) }); renderSheet(); }); if (pr) await pr; }
+    d.busy = t('Listening to every word…'); renderSheet();
+    const ok = await makeCaptions({ lang: p.capLang || 'auto', out: 'same', hidden: true }); if (ok) p.capAuto = true;
+    S.capJob = null;
+  }
+  if (S.view !== 'editor' || cur() !== p) return;
+  S.sheet = 'autoedit';
+  if (b.kind === 'clips') { d.clips = findClips(p, b); d.step = 'clips'; renderSheet(); return; }
+  const R = studioIdeas(p, b); d.ideas = R.ideas; d.ar = R.ar; d.summary = studioSummary(p, R); d.step = 'ideas'; renderSheet();
+}
+Object.assign(ACT, {
+  stkind: el => { const b = S.sheetData.brief, k = STUDIO_KINDS[el.dataset.v]; Object.assign(b, { kind: el.dataset.v, plat: k.plat, len: k.len, pace: k.pace }); renderSheet(); },
+  stplat: el => { S.sheetData.brief.plat = el.dataset.v; renderSheet(); },
+  stlen: el => { S.sheetData.brief.len = el.dataset.v; renderSheet(); },
+  stpace: el => { S.sheetData.brief.pace = el.dataset.v; renderSheet(); },
+  stgo: () => studioGo(),
+  stback: () => { S.sheetData.step = 'brief'; renderSheet(); },
+  stidea: el => { const it = S.sheetData.ideas[+el.dataset.i]; it.on = el.checked; renderSheet(); },
+  stpart: el => { const it = S.sheetData.ideas[+el.dataset.i]; it.list[+el.dataset.k].on = el.checked; renderSheet(); },
+  stapply: () => studioApply(),
+  stredo: () => { const i = S.history.map(h => h.label).lastIndexOf('Auto-edit'); if (i >= 0) while (S.history.length > i) undo(); S.sheetData.step = 'ideas'; renderSheet(); },
+  stclipplay: el => { const c = S.sheetData.clips[+el.dataset.i], p = cur(), o = srcToOut(p, c.s); if (o == null) return; seekOut(o); play(); clearTimeout(S.autoStop); S.autoStop = setTimeout(() => { if (S.playing) pause(); }, Math.min(c.dur, 60) * 1000); },
+  stclipmake: el => makeClipProject(S.sheetData.clips[+el.dataset.i]),
+});
+document.addEventListener('input', e => {
+  const k = e.target.dataset?.k; if (!k) return;
+  if (k === 'stwish') S.sheetData.brief.wish = e.target.value;
+  if (k === 'stideatext') S.sheetData.ideas[+e.target.dataset.i].text = e.target.value;
+});
 </script>
 <script>if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});</script></body></html>
