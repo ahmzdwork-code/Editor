@@ -352,6 +352,7 @@ summary{cursor:pointer;color:var(--accent-text);font-size:14px;font-weight:500;p
 .toast{background:rgba(58,58,60,.96);color:#fff;padding:10px 16px;border-radius:14px;font-size:15px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.4);display:flex;gap:12px;align-items:center;pointer-events:auto;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .toast button{color:var(--accent-text);font-weight:600}
 .acards.out .aprev i{animation-direction:reverse}
+[hidden]{display:none!important}
 </style>
 
 <div class="app" id="app"></div>
@@ -1393,6 +1394,7 @@ Object.assign(AR, {
 "Texts: {n}": "نصوص: {n}",
 "Overlays: {n}": "طبقات: {n}",
 "Sounds: {n}": "أصوات: {n}",
+"The phone ran out of memory while writing captions, so the page restarted. Your project is back. Try again: captions now use the lighter speech program.": "نفدت ذاكرة الهاتف أثناء كتابة الترجمة فأُعيد تشغيل الصفحة. مشروعك عاد كما هو. حاول مرة أخرى: الترجمة الآن تستخدم برنامج الكلام الأخف.",
 });
 /* core: helpers, data model, storage, timeline maths, analysis of the sound and picture */
 
@@ -1452,11 +1454,11 @@ const icon = (n, c = '') => `<svg class="i ${c}" viewBox="0 0 24 24" aria-hidden
 const markSvg = (size = 34, cls = '') => `<svg class="${cls}" width="${size}" height="${size}" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="9" y="9" width="22" height="22" rx="3"/><rect x="9" y="9" width="22" height="22" rx="3" transform="rotate(45 20 20)"/></g><path d="M17 14.8v10.4l8.4-5.2z" fill="currentColor"/></svg>`;
 const LOGO = '';
 const loaderSvg = (size = 28) => `<span class="loader" style="width:${size}px;height:${size}px" aria-hidden="true"></span>`;
-function toast(msg, action) {
+function toast(msg, action, ms) {
   const el = document.createElement('div'); el.className = 'toast';
   el.innerHTML = `<span>${esc(msg)}</span>${action ? `<button>${esc(action.label)}</button>` : ''}`;
   if (action) el.querySelector('button').onclick = () => { action.fn(); el.remove(); };
-  $('#toast').replaceChildren(el); setTimeout(() => el.remove(), action ? 5000 : 2800);
+  $('#toast').replaceChildren(el); setTimeout(() => el.remove(), ms || (action ? 5000 : 2800));
 }
 
 /* ---------- languages ---------- */
@@ -1740,6 +1742,8 @@ async function pickFile(file, more = []) {
   if (!stored) toast(t('Kept for this session only (not enough space to store the video)'));
   DB.put(p);
 }
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) { } };
 async function openProject(p, media) {
   pause();
   for (const u of Object.values(S.urls)) { if (!Object.values(media).some(m => m.url === u)) URL.revokeObjectURL(u); }
@@ -1747,7 +1751,7 @@ async function openProject(p, media) {
   p = normalize(p);
   const first = p.clips[0];
   S.cur = p; S.file = S.files[first.id]; S.url = S.urls[first.id]; S.rs = { id: 'pv' }; S.faceJob = null; S.selBlur = null; S.editorSeen = false; if (S.music) { S.music.pause(); S.music = null; } S.musicUrl = null; S.history = []; S.future = []; S.t = 0; S.segi = 0; S.audio = null; S.audioBuf = null; S.thumbs = []; S.chat = []; S.tipHidden = false; S.sheet = null; S.capJob = null; S.exp = null;
-  S.view = 'editor'; renderEditor();
+  S.view = 'editor'; lsSet('ve.open', p.id); DB.put(p); renderEditor();
   ensureFont(p.cap.font); ensureFont(p.cap.arFont); p.texts.forEach(t => ensureFont(t.font));
   makeThumbs(p);
   analyseAudio();
@@ -2135,9 +2139,29 @@ function setActive(d) {
   const old = S.video; S.video = d; if (old) deckGain(old, false); deckGain(d, true);
 }
 /* puts the waiting deck on the start of the next part */
+/* It is put a moment BEFORE the part (pre-roll) and started silently just before the cut, so at the cut it is
+   already playing: phones take a while to start a paused video, which made every cut stutter. */
+const PRE = 0.45;
 function prepNext() {
   const p = cur(), i = S.segi + 1, g = p.segs[i], d = S.decks.find(x => x !== S.video); if (!g || !d) return;
-  const c = segClip(p, g); d._seg = i; deckSeek(d, c, g.in - c.off); d.playbackRate = partRate(g, 0) || 1;
+  if (d._seg === i && d._pre?.started && !d.paused) return;
+  const c = segClip(p, g), local = g.in - c.off, rate = partRate(g, 0) || 1;
+  if (!d.paused) d.pause();
+  // a freeze frame never plays, so it only needs its picture
+  const pre = g.freeze ? 0 : Math.min(local, PRE * rate);
+  d._seg = i; d._pre = pre > 0.05 ? { local, started: false } : null;
+  deckSeek(d, c, local - pre); d.playbackRate = rate;
+}
+/* called every frame while playing: starts the waiting deck (silent) when the cut is near */
+function prerollTick(rem) {
+  const d = S.decks.find(x => x !== S.video), pr = d?._pre; if (!pr || d._seg !== S.segi + 1) return;
+  // learns how long this phone takes to get a video moving, so the next one starts just in time
+  if (pr.started && pr.t0 && !pr.moving && d.currentTime > pr.c0 + 0.001) { pr.moving = true; const lat = (performance.now() - pr.t0) / 1000; S.preLat = clamp((S.preLat ?? 0.15) * 0.6 + lat * 0.4, 0.02, 0.6); }
+  if (pr.started || d.readyState < 2 || d.seeking) return;
+  const lead = Math.max(0, pr.local - d.currentTime) / (d.playbackRate || 1) + (S.preLat ?? 0.15);
+  if (rem > lead) return;
+  pr.started = true; pr.t0 = performance.now(); pr.c0 = d.currentTime; deckGain(d, false); d.muted = true;
+  const q = d.play(); if (q) q.catch(() => { pr.started = false; pr.failed = true; });
 }
 /* shows the picture at a point of the long timeline (when not playing) */
 function showSrc(gsrc) {
@@ -4781,7 +4805,7 @@ function play() {
   prepNext();
   for (const d of S.decks) {
     d.muted = false;
-    if (d !== S.video && !d._unlocked && d.src) { deckGain(d, false); const pr = d.play(); if (pr) pr.then(() => { d._unlocked = true; if (d !== S.video) { d.pause(); prepNext(); } }).catch(() => { }); }
+    if (d !== S.video && !d._unlocked && d.src) { deckGain(d, false); const pr = d.play(); if (pr) pr.then(() => { d._unlocked = true; if (d !== S.video && !d._pre?.started) { d.pause(); prepNext(); } }).catch(() => { }); }
   }
   deckGain(S.video, true);
   if (!S.frz) S.video.play().catch(() => { S.playing = false; updatePlay(); });
@@ -4790,18 +4814,30 @@ function play() {
   startPreviewSounds();
   requestAnimationFrame(loop);
 }
-function pause() { stopPreviewSounds(); const was = S.playing; S.playing = false; S.waiting = false; for (const d of S.decks || []) if (!d.paused) d.pause(); if (S.music && !S.music.paused) S.music.pause(); updatePlay(); if (was) drawPreview(); }
+function pause() { stopPreviewSounds(); for (const d of S.decks || []) if (d._pre) d._pre.started = false; const was = S.playing; S.playing = false; S.waiting = false; for (const d of S.decks || []) if (!d.paused) d.pause(); if (S.music && !S.music.paused) S.music.pause(); updatePlay(); if (was) drawPreview(); }
 /* next part: swap to the waiting deck if it's ready; otherwise jump (same clip) or wait a moment, keeping the last picture */
 function nextPart() {
   const p = cur(), v = S.video, ni = S.segi + 1;
   if (ni >= p.segs.length) { pause(); S.t = outDur(p); updateTc(); scrollToTime(); drawPreview(); return false; }
   const g2 = p.segs[ni], c2 = segClip(p, g2), local = g2.in - c2.off, d = S.decks.find(x => x !== v);
   const startFreeze = () => { S.frz = g2.freeze ? { t0: performance.now(), base: segStarts(p)[ni] } : null; };
+  // the waiting deck is already running from just before the cut: switch the moment it reaches the part
+  if (d._seg === ni && d._pre?.started && !d.paused && !d.seeking) {
+    if ((d.currentTime >= local - 0.03) || d.currentTime > local + 1) {
+            d.muted = false; setActive(d); startFreeze(); v.pause(); d._pre = null; S.segi = ni; S.waiting = false; prepNext(); return true;
+    }
+    if (!S.waiting) { S.waiting = true; v.pause(); }
+    return true;
+  }
+  if (d._seg === ni && d._pre && !d._pre.started) {
+    // the cut came before the deck could start (a very short part): go straight to the part
+    d._pre = null; deckSeek(d, c2, local);
+  }
   if (d._seg === ni && deckReady(d, local)) {
     d.playbackRate = partRate(g2, 0) || 1; d.muted = false; setActive(d); startFreeze();
     if (!S.frz) d.play().catch(() => { d.muted = true; d.play().catch(() => { }); }); v.pause(); S.segi = ni; S.waiting = false; prepNext(); return true;
   }
-  if (c2.id === v._clip && !S.waiting) { S.segi = ni; v.currentTime = local; v.playbackRate = partRate(g2, 0) || 1; startFreeze(); if (S.frz) v.pause(); else if (v.paused) v.play().catch(() => { }); prepNext(); return true; }
+  if (c2.id === v._clip && !S.waiting && !(d._seg === ni && d.readyState >= 1)) { S.segi = ni; v.currentTime = local; v.playbackRate = partRate(g2, 0) || 1; startFreeze(); if (S.frz) v.pause(); else if (v.paused) v.play().catch(() => { }); prepNext(); return true; }
   // the next clip isn't ready yet: hold here until it is
   if (!S.waiting) { S.waiting = true; v.pause(); if (d._seg !== ni) { d._seg = ni; deckSeek(d, c2, local); } }
   return true;
@@ -4815,13 +4851,14 @@ function loop() {
     if (!S.frz) S.frz = { t0: performance.now(), base: segStarts(p)[S.segi] };
     if (!v.paused) v.pause();
     const el = (performance.now() - S.frz.t0) / 1000;
-    if (el >= g.freeze) { S.frz = null; if (!nextPart()) return; } else S.t = S.frz.base + el;
+    if (el >= g.freeze) { S.frz = null; if (!nextPart()) return; } else { S.t = S.frz.base + el; prerollTick(g.freeze - el); }
   }
   else if (S.waiting || ct >= g.out - 0.03 || v.ended) { if (!nextPart()) return; }
   else if (ct < g.in - 0.3) v.currentTime = g.in - c.off;
   const gg = p.segs[S.segi];
   if (!S.waiting && !gg.freeze) {
     const u = clamp(partOut(gg, srcNow()), 0, segLen(gg)); S.t = segStarts(p)[S.segi] + u;
+    prerollTick(segLen(gg) - u);
     if (curvePts(gg)) { const r = partRate(gg, u); if (Math.abs(v.playbackRate - r) > 0.02) v.playbackRate = r; }
   }
   updateTc(); scrollToTime(); drawPreview(); updateAudio();
@@ -4931,7 +4968,13 @@ async function makeCaptions(cfg) {
   let audio; try { audio = await resample16k(S.audioBuf); } catch (e) { S.capJob = { state: 'error', text: t('The sound couldn’t be prepared.'), detail: String(e.message || e) }; renderSheet(); return false; }
   const inPage = location.protocol === 'file:';
   const base = { audio, language: cfg.lang === 'auto' ? null : langEnglish(cfg.lang).toLowerCase(), task: cfg.out === 'en' && cfg.lang !== 'en' ? 'translate' : 'transcribe' };
-  const list = engines(cfg.model || (HARD_LANGS.includes(cfg.lang) ? 'small' : 'base'));
+  // after the phone ran out of memory once, the lighter speech program is used
+  let size = cfg.model || (HARD_LANGS.includes(cfg.lang) ? 'small' : 'base'); if (size === 'small' && lsGet('ve.capLite')) size = 'base';
+  const list = engines(size);
+  // free what isn't needed while the speech program runs (it needs a lot of memory on a phone)
+  pause(); for (const d of S.decks || []) if (d !== S.video) { try { d.removeAttribute('src'); d.load(); } catch (e) { } d._clip = null; d._seg = -1; d._pre = null; }
+  if (S.rs) S.rs.snap = null;
+  lsSet('ve.capRun', cur().id); DB.put(cur());
   let words = null, lastErr = '', exact = false;
   for (let i = 0; i < list.length && !words; i++) {
     const eng = list[i], files = {};
@@ -4954,6 +4997,8 @@ async function makeCaptions(cfg) {
       if (eng.word) { try { localStorage.setItem('pve.wordTiming', 'off'); } catch (x) { } S.capJob = { state: 'run', text: t('Word-by-word timing isn’t available on this device. Switching to sentence timing…'), pct: null }; renderSheet(); await sleep(600); }
     }
   }
+  // the speech program is closed straight away to give the memory back
+  whisperWorker?.terminate(); whisperWorker = null; mainAsr = null; mainKey = ''; lsSet('ve.capRun', null);
   if (!words) {
     S.capJob = { state: 'error', detail: lastErr.slice(0, 400), text: /fetch|network|Failed to load|NetworkError|ERR_|import/i.test(lastErr) ? t('The speech program couldn’t download. Check your internet connection and try again.') : /memory|allocation|RangeError|OOM/i.test(lastErr) ? t('The phone ran out of memory. Choose Good or Fast, or try a shorter video.') : t('Something went wrong while writing captions.') };
     renderSheet(); return false;
@@ -4967,7 +5012,7 @@ async function makeCaptions(cfg) {
   if (p.capLang === 'ur' && p.cap.arFont === 'Cairo') p.cap.arFont = 'Noto Nastaliq Urdu';
   ensureFont(p.cap.arFont);
   if (S.sheet === 'captions') S.sheetData = { tab: 'lines' };
-  changed();
+  changed(); DB.put(p);
   if (!cfg.hidden) toast(t('Captions written. Read them through and tap any line to fix it.'));
   return true;
 }
@@ -5555,24 +5600,30 @@ async function runExport(prep) {
       return tOut;
     };
     // the first part is made ready before recording starts
-    let curD = A, nextD = B; const g0 = p.segs[0], c0 = segClip(p, g0); await seekTo(curD, c0, g0.in - c0.off);
+    // each part starts a moment early (silent, not recorded) so the picture is already moving when recording resumes
+    const preOf = (g, lin) => g.freeze ? 0 : Math.min(lin, 0.4 * (partRate(g, 0) || 1));
+    let curD = A, nextD = B; const g0 = p.segs[0], c0 = segClip(p, g0); await seekTo(curD, c0, g0.in - c0.off - preOf(g0, g0.in - c0.off));
     let nextReady = null;
     for (let i = 0; i < p.segs.length; i++) {
       if (ctl.aborted) break;
       const g = p.segs[i], c = segClip(p, g), lin = g.in - c.off, lout = g.out - c.off;
-      if (i > 0) {
-        await nextReady;
-        // only if the next part still isn't ready, pause the recording for that moment (so no frozen picture is kept)
-        if (!(curD.readyState >= 2 && !curD.seeking && Math.abs(curD.currentTime - lin) < 0.1)) { if (rec.state === 'recording') rec.pause(); await seekTo(curD, c, lin); }
+      if (i > 0) await nextReady;
+      if (rec.state === 'recording') rec.pause();
+      const pre = preOf(g, lin), want = lin - pre;
+      curD.playbackRate = partRate(g, 0) || 1; curD.muted = false; if (curD._g) curD._g.gain.value = 0; if (nextD._g) nextD._g.gain.value = 0;
+      if (!(curD.readyState >= 2 && !curD.seeking && curD.currentTime >= want - 0.1 && curD.currentTime <= lin + 0.02)) await seekTo(curD, c, want);
+      if (!g.freeze) {
+        curD._started = true; try { await curD.play(); } catch (e) { }
+        await new Promise(res => { const t0 = performance.now(), w = () => { if (ctl.aborted || performance.now() - t0 > 3000 || (pre > 0 ? curD.currentTime >= lin - 0.012 : curD.currentTime > lin + 0.004)) return res(); requestAnimationFrame(w); }; w(); });
+        if (curD._g) curD._g.gain.value = 1;
       }
       draw(curD, g);
       if (rec.state === 'inactive') rec.start(1000); else if (rec.state === 'paused') rec.resume();
       if (p.sounds.length) stopSnd = await playSounds(ac, dest, p, base, base + segLen(g));
       if (mu) { try { mu.currentTime = base; } catch (e) { } }
-      curD.playbackRate = partRate(g, 0) || 1; curD._g ? curD._g.gain.value = g.freeze ? 0 : 1 : 0; nextD._g ? nextD._g.gain.value = 0 : 0;
-      curD.muted = false; if (!g.freeze) { curD._started = true; await curD.play(); } if (mu && base < (mu.duration || 0)) mu.play().catch(() => { });
+      if (mu && base < (mu.duration || 0)) mu.play().catch(() => { });
       // while this part plays, the other player gets ready on the next part
-      const gn = p.segs[i + 1]; nextReady = gn ? (async () => { const cn = segClip(p, gn); await seekTo(nextD, cn, gn.in - cn.off); })() : null;
+      const gn = p.segs[i + 1]; nextReady = gn ? (async () => { const cn = segClip(p, gn), ln = gn.in - cn.off; await seekTo(nextD, cn, ln - preOf(gn, ln)); })() : null;
       const fz0 = performance.now(); g._fz = 0;
       await new Promise(res => { const step = () => {
         if (g.freeze) { g._fz = (performance.now() - fz0) / 1000; if (ctl.aborted || g._fz >= g.freeze) return res(); }
@@ -5618,7 +5669,7 @@ const ACT = {
   open: el => reopen(el.dataset.id),
   askdel: el => { S.confirmDel = el.dataset.id || null; renderHome(); },
   del: async el => { const id = el.dataset.id; S.projects = S.projects.filter(p => p.id !== id); S.confirmDel = null; await DB.del(id); DB.req('videos', 'readwrite', s => s.delete(id + ':music')); renderHome(); toast(t('Deleted')); },
-  home: () => { pause(); $('#toast').replaceChildren(); S.view = 'home'; S.sheet = null; S.selBlur = null; if (S.cur) DB.put(S.cur); renderHome(); },
+  home: () => { pause(); lsSet('ve.open', null); $('#toast').replaceChildren(); S.view = 'home'; S.sheet = null; S.selBlur = null; if (S.cur) DB.put(S.cur); renderHome(); },
   uilang: el => { setUiLang(el.dataset.v); if (S.view === 'home') renderHome(); else { renderEditor(); } },
   sheet: el => { const v = el.dataset.v; if (S.sheet === v) closeSheet(); else openSheet(v); },
   close: () => closeSheet(),
@@ -5835,7 +5886,16 @@ addEventListener('pagehide', () => { if (S.cur) DB.put(S.cur); });
 
 (async function start() {
   renderHome();
-  if (await DB.open()) { S.projects = ((await DB.all()) || []).map(normalize); if (S.view === 'home') renderHome(); }
+  if (await DB.open()) {
+    S.projects = ((await DB.all()) || []).map(normalize); if (S.view === 'home') renderHome();
+    // if the phone closed the page while you were editing (it does that when memory runs out), go back to that project
+    const open = lsGet('ve.open'), capRun = lsGet('ve.capRun');
+    if (capRun) { lsSet('ve.capRun', null); lsSet('ve.capLite', '1'); }
+    if (open && S.projects.some(p => p.id === open) && S.view === 'home') {
+      await reopen(open);
+      if (capRun) S.crashNote = true, toast(t('The phone ran out of memory while writing captions, so the page restarted. Your project is back. Try again: captions now use the lighter speech program.'), null, 9000);
+    }
+  }
   useCap('sample').then(s => { S.claude.sample = s; if (S.sheet) renderSheet(); });
   useCap('downloads').then(d => { S.claude.downloads = d; });
   document.fonts?.ready.then(() => { drawPreview(); drawTimeline(); });
@@ -6010,7 +6070,7 @@ function layerItems(p) {
   for (const x of p.texts) out.text.push({ k: 'text', id: x.id, s: x.start, e: x.start + x.dur, label: x.style === 'shape' ? t(SHAPES[x.text]?.n || 'Shape') : x.text, cls: x.style === 'shape' ? 'stk' : x.style === 'phrase' ? 'phr' : '' });
   for (const e of p.effects) { const r = e.whole ? { start: 0, end: total } : rangeOut(p, e.s, e.e); if (r) out.fx.push({ k: 'fx', id: e.id, s: r.start, e: r.end, label: t(EFFECTS[e.type]?.name || 'Effect') }); }
   for (const z of p.zooms) { const r = rangeOut(p, z.s, z.e); if (r) out.fx.push({ k: 'zoom', id: z.id, s: r.start, e: r.end, label: t('Zoom {n}%', { n: Math.round(z.scale * 100) }) }); }
-  for (const c of p.captions) { const r = rangeOut(p, c.s, c.e); if (r) out.cap.push({ k: 'cap', id: c.id, s: r.start + (p.cap.offset || 0), e: r.end + (p.cap.offset || 0), label: p.cap.show !== 'orig' && c.tr?.[p.cap.show] ? c.tr[p.cap.show] : c.text }); }
+  if (p.cap.on) for (const c of p.captions) { const r = rangeOut(p, c.s, c.e); if (r) out.cap.push({ k: 'cap', id: c.id, s: r.start + (p.cap.offset || 0), e: r.end + (p.cap.offset || 0), label: p.cap.show !== 'orig' && c.tr?.[p.cap.show] ? c.tr[p.cap.show] : c.text }); }
   for (const s of p.sounds) out.snd.push({ k: 'snd', id: s.id, s: s.start, e: s.start + s.dur, label: s.name || t('Sound'), cls: s.kind });
   for (const tr of p.tracks) { if (!tr.keys?.length && tr.kind !== 'box') continue; const a = tr.kind === 'box' ? tr.s : tr.keys[0].t - 0.4, b = tr.kind === 'box' ? tr.e : tr.keys[tr.keys.length - 1].t + 0.7, r = rangeOut(p, Math.max(0, a), Math.min(p.dur, b)); if (r) out.trk.push({ k: 'trk', id: tr.id, s: r.start, e: r.end, label: tr.kind === 'person' ? t('Modesty cover') : tr.kind === 'box' ? t('Blur area') : t('Face blur'), cls: tr.on ? '' : 'off' }); }
   return out;
