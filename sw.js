@@ -1,6 +1,6 @@
 /* Offline support: the app itself and the on-phone helpers (face and people finders, speech program)
    are kept on the phone after the first use. Videos are never sent anywhere; this only stores the app. */
-const VERSION = 'v1-1793089157';
+const VERSION = 'v1-1793089871';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open('shell-' + VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

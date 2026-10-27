@@ -394,6 +394,11 @@ summary{cursor:pointer;color:var(--accent-text);font-size:14px;font-weight:500;p
 .g-stat i,.g-step i,.g-quote i,.g-lower i,.g-cta i,.g-checklist i{width:auto;flex:1;height:8px!important;align-self:center}
 @keyframes gbar{0%{transform:scaleY(.1);transform-origin:bottom}60%,100%{transform:none}}
 @media (prefers-reduced-motion:reduce){.gprev i{animation:none}}
+
+.upd{position:fixed;left:50%;transform:translateX(-50%);top:calc(8px + var(--sat));z-index:40;display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:22px;background:var(--accent);color:#fff;font-weight:600;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.5);white-space:nowrap}
+.tabs{overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}.tabs::-webkit-scrollbar{display:none}.tabs button{flex:none}
+.sec-title{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:-10px}
+.ver{color:var(--faint);font-size:12px;text-align:center}
 </style>
 
 <div class="app" id="app"></div>
@@ -1614,6 +1619,14 @@ Object.assign(AR, {
 "That photo couldn’t be used.": "تعذّر استخدام هذه الصورة.",
 "Try another photo, or a video.": "جرّب صورة أخرى أو فيديو.",
 "Auto-edit works like a professional editor: tell it what you’re making, and it watches the video and suggests ideas — a strong opening, cleaner speech, captions, animated numbers and titles, smooth transitions. It can also find the best short clips in a long video. The AI editor takes requests in your own words. Every change can be undone.": "التعديل التلقائي يعمل كمحرّر محترف: أخبره بنوع الفيديو فيشاهده ويقترح أفكارًا — افتتاحية قوية، كلام أنظف، ترجمة، أرقام وعناوين متحركة، وانتقالات ناعمة. ويمكنه أيضًا إيجاد أفضل المقاطع القصيرة من فيديو طويل. والمحرّر الذكي ينفذ طلباتك بكلماتك. ويمكن التراجع عن كل تغيير.",
+"Writing captions… the video plays again when it’s done.": "جارٍ كتابة الترجمة… يعمل الفيديو مرة أخرى عند الانتهاء.",
+"A new version is ready. Tap to update.": "إصدار جديد جاهز. اضغط للتحديث.",
+"Version": "الإصدار",
+"Presets": "جاهزة",
+"Words": "الكلمات",
+"Up and down": "أعلى وأسفل",
+"Left and right": "يسار ويمين",
+"Drag the captions anywhere on the video. Yellow lines show when they are exactly in the middle.": "اسحب الترجمة إلى أي مكان على الفيديو. تظهر خطوط صفراء عندما تكون في المنتصف تمامًا.",
 });
 /* core: helpers, data model, storage, timeline maths, analysis of the sound and picture */
 
@@ -2388,7 +2401,7 @@ function prerollTick(rem) {
 }
 /* shows the picture at a point of the long timeline (when not playing) */
 function showSrc(gsrc) {
-  const p = cur(); if (!p || !S.decks) return;
+  const p = cur(); if (!p || !S.decks || S.capBusy) return;
   const c = clipAt(p, gsrc), local = gsrc - c.off;
   if (S.video._clip !== c.id) { const o = S.decks.find(x => x._clip === c.id); if (o) setActive(o); else deckLoad(S.video, c); }
   deckSeek(S.video, c, local);
@@ -2893,11 +2906,14 @@ function drawCaption(ctx, W, H, p, src, hits) {
   y = clamp(y, H * 0.02, H * 0.98 - total);
   const k = clamp((sAdj - c.s) / 0.16, 0, 1), y0 = y;
   ctx.save();
+  // captions can sit anywhere left to right too (kept inside the picture)
+  let dxC = cp.x != null ? (cp.x - 0.5) * W : 0;
   if (cp.anim === 'fade') ctx.globalAlpha = k;
   if (cp.anim === 'pop') { const s2 = 0.86 + 0.14 * (1 - Math.pow(1 - k, 3)) + (k < 1 ? 0.03 * Math.sin(k * Math.PI) : 0); ctx.translate(W / 2, y + total / 2); ctx.scale(s2, s2); ctx.translate(-W / 2, -(y + total / 2)); }
   ctx.textBaseline = 'middle'; let maxW = 0;
   // measure every line first (for cards and plates around the whole block)
   const lay = blocks.map(b => { ctx.font = b.font; if ('letterSpacing' in ctx) ctx.letterSpacing = cp.track ? `${(b.px * cp.track).toFixed(1)}px` : '0px'; const space = ctx.measureText(' ').width, widths = b.words.map(w => ctx.measureText(w.w).width), lineW = widths.reduce((a, x) => a + x, 0) + space * Math.max(0, b.words.length - 1) + (b.timed ? b.words.length * b.px * (mode === 'tiles' ? 0.36 : mode === 'bounce' ? 0.16 : 0) : 0); maxW = Math.max(maxW, lineW); return { space, widths, lineW }; });
+  { const lim = Math.max(0, W / 2 - maxW / 2 - W * 0.03); dxC = clamp(dxC, -lim, lim); if (dxC) ctx.translate(dxC, 0); }
   if (cp.effect === 'card' || cp.effect === 'plate') {
     const pd = base * 0.55, bw = maxW + pd * 2, bh = total + pd * 1.3, bx = W / 2 - bw / 2, by = y - pd * 0.65;
     ctx.save();
@@ -2947,7 +2963,7 @@ function drawCaption(ctx, W, H, p, src, hits) {
   });
   if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
   ctx.restore();
-  hits?.push({ kind: 'cap', x: W / 2 - maxW / 2 - base * 0.4, y: y0 - base * 0.2, w: maxW + base * 0.8, h: total + base * 0.4 });
+  hits?.push({ kind: 'cap', id: c.id, x: W / 2 + dxC - maxW / 2 - base * 0.4, y: y0 - base * 0.2, w: maxW + base * 0.8, h: total + base * 0.4 });
 }
 function drawTexts(ctx, W, H, p, tOut, hits) {
   const base = Math.min(W, H);
@@ -4788,7 +4804,7 @@ const SHEETS = {
     <h4>${t("7. Export")}</h4><p>${t("Tap Export, pick the resolution and frame rate, and keep the screen on while it saves. On iPhone, choose \u201cSave Video\u201d to put it in your Photos.")}</p>
     <h4>${t('Put the app on your home screen')}</h4><p>${t('On iPhone, open the app’s website in Safari, tap Share, then Add to Home Screen. It then opens like any app, full screen, and works offline after the first use.')}</p>
     <h4>${t('Not available yet')}</h4><p>${t('Playing a clip backwards, text-to-speech and stabilising shaky video aren’t in this version.')}</p>
-    <h4>${t('Good to know')}</h4><ol><li>${t('Tap the video to play or pause.')}</li><li>${t('The arrows next to Play undo and redo any change.')}</li><li>${t('No music is ever added. Libraries contain only shapes, colours and simple sounds.')}</li></ol></div>` }),
+    <h4>${t('Good to know')}</h4><ol><li>${t('Tap the video to play or pause.')}</li><li>${t('The arrows next to Play undo and redo any change.')}</li><li>${t('No music is ever added. Libraries contain only shapes, colours and simple sounds.')}</li></ol><p class="ver">${t('Version')} ${APP_VERSION}</p></div>` }),
   privacy: () => ({ title: t('Your privacy'), body: `<div class="help">
     <div class="note safe">${icon('shield', 's')}<span><b>${t('Your videos never leave your phone.')}</b> ${t('Editing, captions, face blur and saving all happen on this phone.')}</span></div>
     <h4>${t('What is downloaded')}</h4><p>${t('The first time you use them, the app downloads its tools: the speech program for captions and the face finder. That is downloading tools, not uploading your video.')}</p>
@@ -4975,7 +4991,8 @@ function captionsSheet() {
   if (job && job.state === 'run') return { title: t('Captions'), body: `<p class="lead">${esc(job.text)}</p><div class="bar"><i style="width:${job.pct == null ? 100 : Math.round(job.pct * 100)}%;${job.pct == null ? 'opacity:.45' : ''}"></i></div>
     <div class="note safe">${icon('shield', 's')}<span>${t('This runs on your phone. Keep this screen open. Longer videos take longer.')}</span></div>` };
   if (!p.captions.length || d.recreate) return { title: d.recreate ? t('Re-create captions') : t('Captions'), body: captionCreateHTML(p, d, job) };
-  const tabs = seg('captab', d.tab, [['style', t('Style')], ['lines', t('Words and timing')], ['lang', t('Language')]]);
+  // one button per area, like CapCut: presets, font, style, animation, position, the words, language
+  const capTabs = tabs('captab', d.tab, [['style', t('Presets')], ['font', t('Font')], ['look', t('Style')], ['anim', t('Animation')], ['pos', t('Position')], ['lines', t('Words')], ['lang', t('Language')]]);
   let body = '';
   if (d.tab === 'style') {
     const cp = p.cap;
@@ -4993,20 +5010,28 @@ function captionsSheet() {
     };
     const group = (cat, title) => { const list = Object.entries(CAP_PRESETS).filter(([, pr]) => pr.cat === cat); return `<div class="sec-title">${title}</div><div class="cards c3">${list.map(([k, pr]) => `<button class="card mini ${cp.preset === k ? 'on' : ''}" data-act="cappreset" data-v="${k}">${demo(k, pr)}<span class="t">${t(pr.name)}</span></button>`).join('')}</div>`; };
     body = `<div class="field"><div class="lbl">${t('Show captions')}</div>${seg('capon', cp.on ? 1 : 0, [[1, t('On')], [0, t('Off')]])}</div>
-    ${group('word', t('Word by word'))}${group('look', t('Styles'))}${group('ar', t('Arabic and Urdu'))}
+    ${group('word', t('Word by word'))}${group('look', t('Styles'))}${group('ar', t('Arabic and Urdu'))}`;
+  } else if (d.tab === 'font') {
+    const cp = p.cap, fl = (list, curF, which) => `<div class="fgrid">${list.map(([f]) => `<button class="fopt ${curF === f ? 'on' : ''}" data-act="capfontset" data-w="${which}" data-v="${esc(f)}" style="font-family:${fontStack(f)};font-weight:${fontWeight(f)}">${isArFont(f) ? 'بسم الله' : 'Aa Text'}<i>${esc(f)}</i></button>`).join('')}</div>`;
+    body = `<div class="sec-title">${t('Font')}</div>${fl(FONTS, cp.font, 'latin')}<div class="sec-title">${t('Font for Arabic and Urdu')}</div>${fl(AR_FONTS, cp.arFont, 'ar')}
+    ${toggleRow('capupper', cp.upper, t('All capitals'), t('For Latin letters'))}`;
+  } else if (d.tab === 'look') {
+    const cp = p.cap;
+    body = `<div class="field"><div class="lbl">${t('Text colour')}</div>${swatches('capcolor', cp.color)}</div>
     <div class="field"><div class="lbl">${t('Light up the word being said')}</div>${seg('capword', cp.word || 'off', [['off', t('Off')], ['color', t('Colour')], ['pill', t('Pill')], ['dim', t('Spotlight')], ['one', t('One word')]])}
       <span class="hint">${p.captions.some(x => x.words?.some(w => w.s != null)) ? t('Timed to the speech, word by word.') : t('Word timing is estimated for these captions. Re-create captions for exact timing.')}</span></div>
-    <div class="field"><div class="lbl">${t('Font')}</div><select class="select" data-k="capfont">${fontOptions(cp.font)}</select></div>
-    <div class="field"><div class="lbl">${t('Font for Arabic and Urdu')}</div><select class="select" data-k="caparfont">${fontOptions(cp.arFont, true)}</select></div>
-    <div class="field"><div class="lbl">${t('Text colour')}</div>${swatches('capcolor', cp.color)}</div>
     ${cp.word && cp.word !== 'dim' ? `<div class="field"><div class="lbl">${t('Colour of the word being said')}</div>${swatches('caphl', cp.hl)}</div>` : ''}
     <div class="field"><div class="lbl">${t('Outline or background')}</div>${seg('capeffect', ['none', 'shadow', 'outline', 'box', 'glow'].includes(cp.effect) ? cp.effect : '', [['none', t('None')], ['shadow', t('Shadow')], ['outline', t('Outline')], ['box', t('Box')], ['glow', t('Glow')]])}</div>
     ${cp.effect === 'box' || cp.effect === 'hard' ? `<div class="field"><div class="lbl">${t('Box colour')}</div>${swatches('capbox', cp.box)}</div>` : ''}
-    <div class="field"><div class="lbl">${t('Animation')}</div>${seg('capanim', cp.anim, [['none', t('None')], ['fade', t('Fade')], ['pop', t('Pop')], ['type', t('Typewriter')]])}</div>
-    ${range('capsize', cp.size, 0.6, 1.8, 0.05, t('Size'), pct(cp.size))}
-    <div class="field"><div class="lbl">${t('Position')}<span class="v">${t('or drag them on the video')}</span></div>${seg('cappos', cp.y != null ? '' : cp.pos, [['top', t('Top')], ['middle', t('Middle')], ['bottom', t('Bottom')]])}</div>
-    ${toggleRow('capupper', cp.upper, t('All capitals'), t('For Latin letters'))}`;
-  } else if (d.tab === 'lines') {
+    ${range('capsize', cp.size, 0.6, 1.8, 0.05, t('Size'), pct(cp.size))}`;
+  } else if (d.tab === 'anim') {
+    const cp = p.cap;
+    body = `<div class="acards">${[['none', 'None'], ['fade', 'Fade'], ['pop', 'Pop'], ['type', 'Typewriter']].map(([v, n]) => `<button class="acard ${cp.anim === v ? 'on' : ''}" data-act="capanim" data-v="${v}"><span class="aprev a-${v === 'pop' ? 'zoomin' : v}"><i></i></span><span class="t">${t(n)}</span></button>`).join('')}</div>`;
+  } else if (d.tab === 'pos') {
+    const cp = p.cap;
+    body = `<p class="lead">${t('Drag the captions anywhere on the video. Yellow lines show when they are exactly in the middle.')}</p>
+    <div class="field"><div class="lbl">${t('Up and down')}</div>${seg('cappos', cp.y != null ? '' : cp.pos, [['top', t('Top')], ['middle', t('Middle')], ['bottom', t('Bottom')]])}</div>
+    <div class="field"><div class="lbl">${t('Left and right')}</div>${seg('capx', cp.x == null || Math.abs(cp.x - 0.5) < 0.01 ? 'c' : '', [['l', t('Left')], ['c', t('Centre')], ['r', t('Right')]])}</div>`;  } else if (d.tab === 'lines') {
     const editKey = p.cap.show !== 'orig' ? p.cap.show : null;
     body = `<div class="note">${icon('check', 's')}<span>${t('Read through once: tap any line to fix a word. Tap the time to hear that line.')}</span></div>
       ${range('capoffset', p.cap.offset, -1, 1, 0.05, t('Captions early or late? Move them'), `${p.cap.offset > 0 ? '+' : ''}${p.cap.offset.toFixed(2)}s`)}
@@ -5028,7 +5053,7 @@ function captionsSheet() {
         ${p.cap.show !== 'orig' ? toggleRow('capboth', p.cap.both, t('Also show the original line'), '') : ''}</div>` : ''}
       <button class="btn block" data-act="recreate">${t('Re-create captions in another language')}</button>`;
   }
-  return { title: t('Captions'), body: tabs + body };
+  return { title: t('Captions'), body: capTabs + body };
 }
 function captionCreateHTML(p, d, job) {
   const blocked = inClaude(), sizes = { tiny: '40 MB', base: '80 MB', small: '250 MB' };
@@ -5065,6 +5090,7 @@ function paintLookPreviews() {
 /* ---------- playback (jumps over removed parts, changes speed per part) ---------- */
 function play() {
   const p = cur(), v = S.video; if (!v || !p) return;
+  if (S.capBusy) { toast(t('Writing captions… the video plays again when it’s done.')); return; }
   ensurePreviewAudio();
   if (S.t >= outDur(p) - 0.05) S.t = 0;
   const m = outToSrc(p, S.t); S.segi = m.i; showSrc(m.src);
@@ -5183,7 +5209,7 @@ self.onmessage = async (e) => {
   const d = e.data;
   try {
     const key = d.model + (d.dtype || '');
-    if (!asr || loaded !== key) { asr = await pipeline('automatic-speech-recognition', d.model, Object.assign({ progress_callback: (x) => self.postMessage({ type: 'progress', x }) }, d.dtype ? { dtype: d.dtype } : {})); loaded = key; }
+    if (!asr || loaded !== key) { asr = await pipeline('automatic-speech-recognition', d.model, Object.assign({ progress_callback: (x) => self.postMessage({ type: 'progress', x }), session_options: { enableCpuMemArena: false, enableMemPattern: false } }, d.dtype ? { dtype: d.dtype } : {})); loaded = key; }
     if (!d.opts.language && d.codes) { try { const lang = await detectLang(asr, d.audio, Tensor, d.codes); if (lang) { d.opts.language = lang; self.postMessage({ type: 'lang', lang }); } } catch (err) { if (d.fallback) d.opts.language = d.fallback; self.postMessage({ type: 'lang', lang: d.fallback || null, err: String(err && err.message || err) }); } }
     self.postMessage({ type: 'listening' });
     self.postMessage({ type: 'done', out: await asr(d.audio, d.opts) });
@@ -5262,7 +5288,11 @@ async function makeCaptions(cfg) {
   let size = cfg.model || (HARD_LANGS.includes(cfg.lang) ? 'small' : 'base'); if (size === 'small' && lsGet('ve.capLite')) size = 'base';
   const list = engines(size);
   // free what isn't needed while the speech program runs (it needs a lot of memory on a phone)
-  pause(); for (const d of S.decks || []) if (d !== S.video) { try { d.removeAttribute('src'); d.load(); } catch (e) { } d._clip = null; d._seg = -1; d._pre = null; }
+  // both video players are emptied (the picture stays on screen), the overlay videos too; they come back afterwards
+  pause(); for (const d of S.decks || []) { try { d.removeAttribute('src'); d.load(); } catch (e) { } d._clip = null; d._seg = -1; d._pre = null; }
+  for (const m of Object.values(typeof OVM !== 'undefined' ? OVM : {})) if (m.el?.tagName === 'VIDEO') { try { m.el.pause(); m.el.removeAttribute('src'); m.el.load(); } catch (e) { } }
+  if (typeof OVM !== 'undefined') for (const k of Object.keys(OVM)) delete OVM[k];
+  S.capBusy = true;
   if (S.rs) S.rs.snap = null;
   lsSet('ve.capRun', cur().id); DB.put(cur());
   let words = null, lastErr = '', exact = false;
@@ -5290,6 +5320,7 @@ async function makeCaptions(cfg) {
   }
   // the speech program is closed straight away to give the memory back
   whisperWorker?.terminate(); whisperWorker = null; mainAsr = null; mainKey = ''; lsSet('ve.capRun', null);
+  S.capBusy = false; if (S.view === 'editor' && cur() === p) seekOut(S.t);
   if (!words) {
     S.capJob = { state: 'error', detail: lastErr.slice(0, 400), text: /fetch|network|Failed to load|NetworkError|ERR_|import/i.test(lastErr) ? t('The speech program couldn’t download. Check your internet connection and try again.') : /memory|allocation|RangeError|OOM/i.test(lastErr) ? t('The phone ran out of memory. Choose Good or Fast, or try a shorter video.') : t('Something went wrong while writing captions.') };
     renderSheet(); return false;
@@ -6182,7 +6213,17 @@ $('#musicpicker').addEventListener('change', async e => {
 });
 addEventListener('pagehide', () => { if (S.cur) DB.put(S.cur); });
 
+const APP_VERSION = '20261027.0931';
+/* a newer version on the website: offer to load it (the phone may keep the old one otherwise) */
+async function checkUpdate() {
+  if (location.protocol !== 'https:' || inClaude()) return;
+  try { const r = await fetch('version.json', { cache: 'no-store' }); const v = (await r.json()).v; if (v && v !== APP_VERSION) { S.update = v; renderUpdate(); } } catch (e) { }
+}
+function renderUpdate() { let el = $('#upd'); if (!S.update) return; if (!el) { el = document.createElement('button'); el.id = 'upd'; el.className = 'upd'; el.dataset.act = 'doupdate'; document.body.appendChild(el); } el.innerHTML = `${icon('sparkle', 's')}<span>${t('A new version is ready. Tap to update.')}</span>`; }
+ACT.doupdate = async () => { try { if (S.cur) await DB.put(S.cur); for (const r of await navigator.serviceWorker?.getRegistrations?.() || []) await r.unregister(); for (const k of await caches.keys()) if (k.startsWith('shell-')) await caches.delete(k); } catch (e) { } location.reload(); };
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkUpdate(); });
 (async function start() {
+  checkUpdate();
   renderHome();
   if (await DB.open()) {
     S.projects = ((await DB.all()) || []).map(normalize); if (S.view === 'home') renderHome();
@@ -6466,6 +6507,7 @@ function selObj(p = cur()) {
 function selSpan(p = cur()) {
   const o = selObj(p); if (!o) return null;
   if (S.sel.k === 'seg') { const i = p.segs.indexOf(o), st = segStarts(p)[i]; return { s: st, d: segLen(o) }; }
+  if (S.sel.k === 'cap') { const r = rangeOut(p, o.s, o.e); return r && { s: r.start + (p.cap.offset || 0), d: r.end - r.start }; }
   if (S.sel.k === 'fx') { const r = o.whole ? { start: 0, end: outDur(p) } : rangeOut(p, o.s, o.e); return r && { s: r.start, d: r.end - r.start }; }
   if (o.start != null) return { s: o.start, d: o.dur };
   return null;
@@ -6872,7 +6914,13 @@ function bindPreview() {
       if (o) { const k = tg.kind; const hx = tg.hit ? (tg.hit.cx ?? tg.hit.x + tg.hit.w / 2) / c.width : null, hy = tg.hit ? (tg.hit.cy ?? tg.hit.y + tg.hit.h / 2) / c.height : null; g0.ox = k === 'text' ? (getVal(k, o, 'x') ?? hx) : getVal(k, o, 'x'); g0.oy = k === 'text' ? (getVal(k, o, 'y') ?? hy) : getVal(k, o, 'y'); if (k === 'text' && (o.x == null) && !o.keys?.length) { g0.ox = hx; g0.oy = hy; } }
     }
     const fx = (e.clientX - g0.x0) / r.width, fy = (e.clientY - g0.y0) / r.height;
-    if (tg.kind === 'cap') { p.cap.y = clamp((tg.hit.y + tg.hit.h / 2) / c.height + fy, 0.04, 0.96); }
+    if (tg.kind === 'cap') {
+      // anywhere on the video, snapping to the middle lines
+      let nx = (tg.hit.x + tg.hit.w / 2) / c.width + fx, ny = (tg.hit.y + tg.hit.h / 2) / c.height + fy;
+      S.rs.snapX = Math.abs(nx - 0.5) < 0.02; S.rs.snapY = Math.abs(ny - 0.5) < 0.02; if (S.rs.snapX) nx = 0.5; if (S.rs.snapY) ny = 0.5;
+      p.cap.x = clamp(nx, 0.08, 0.92); p.cap.y = clamp(ny, 0.04, 0.96);
+      if (!isSel('cap', S.sel?.id) || S.sel?.k !== 'cap') { S.sel = { k: 'cap', id: tg.hit.id || p.captions[0]?.id }; renderTools(); }
+    }
     else if (tg.kind === 'blur') {
       const tr = p.tracks.find(q => q.id === tg.id), M = S.rs.geo && S.video && videoMapper(S.video, c.width, c.height, S.rs.geo, p.fx);
       if (tr && M) moveTrackTo(tr, outToSrc(p, S.t).src, M, (tg.hit.x + tg.hit.w / 2) + fx * c.width, (tg.hit.y + tg.hit.h / 2) + fy * c.height);
@@ -6917,7 +6965,7 @@ function drawSelFrame(ctx) {
   const p = cur(), o = selObj(p), k = S.sel?.k; if (!o || S.playing || S.full) return;
   const W = ctx.canvas.width, H = ctx.canvas.height; let box = null;
   if (k === 'seg') { const xf = S.rs.mainXf; if (!xf) return; const sp = selSpan(p); if (!sp || S.t < sp.s - 0.01 || S.t > sp.s + sp.d) return; box = { cx: W / 2 + ((xf.x ?? 0.5) - 0.5 + xf.dx) * W, cy: H / 2 + ((xf.y ?? 0.5) - 0.5 + xf.dy) * H, w: W * xf.sc, h: H * xf.sc, rot: xf.rot }; }
-  else { const h = (S.rs.hits || []).find(q => q.id === o.id); if (!h) return; box = { cx: h.cx ?? h.x + h.w / 2, cy: h.cy ?? h.y + h.h / 2, w: h.w, h: h.h, rot: h.rot || 0 }; }
+  else { const h = (S.rs.hits || []).find(q => k === 'cap' ? q.kind === 'cap' : q.id === o.id); if (!h) return; box = { cx: h.cx ?? h.x + h.w / 2, cy: h.cy ?? h.y + h.h / 2, w: h.w, h: h.h, rot: h.rot || 0 }; }
   const dpr = W / ctx.canvas.getBoundingClientRect().width || 1;
   ctx.save(); ctx.translate(box.cx, box.cy); if (box.rot) ctx.rotate(box.rot * Math.PI / 180);
   ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5 * dpr; ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 3 * dpr;
@@ -6925,6 +6973,7 @@ function drawSelFrame(ctx) {
   ctx.fillStyle = '#fff'; for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { ctx.beginPath(); ctx.arc(sx * (box.w / 2 + 4 * dpr), sy * (box.h / 2 + 4 * dpr), 3.5 * dpr, 0, Math.PI * 2); ctx.fill(); }
   ctx.restore();
   // centre guide lines while dragging
+  if (!S.rs.snapX && !S.rs.snapY) return;
   ctx.save(); ctx.strokeStyle = 'rgba(255,214,10,.9)'; ctx.lineWidth = 1 * dpr;
   if (S.rs.snapX) { ctx.beginPath(); ctx.moveTo(W / 2, 0); ctx.lineTo(W / 2, H); ctx.stroke(); }
   if (S.rs.snapY) { ctx.beginPath(); ctx.moveTo(0, H / 2); ctx.lineTo(W, H / 2); ctx.stroke(); }
@@ -7268,6 +7317,11 @@ document.addEventListener('input', e => {
     case 'g.font': L(() => { x.font = v; ensureFont(v); }); break;
     case 'g.size': L(() => x.size = +v, pct(+v)); break;
   }
+});
+
+Object.assign(ACT, {
+  capfontset: el => { const p = cur(); commit('Caption font'); if (el.dataset.w === 'ar') p.cap.arFont = el.dataset.v; else p.cap.font = el.dataset.v; ensureFont(el.dataset.v); changed(); },
+  capx: el => { const p = cur(); commit('Caption position'); p.cap.x = { l: 0.3, c: 0.5, r: 0.7 }[el.dataset.v]; changed(); },
 });
 /* =====================================================================
    GRAPHICS: animated info cards drawn on the video — a number that counts up (with a ring for
